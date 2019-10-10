@@ -16,6 +16,7 @@ func main() {
 	app.Post("/Task/update", Controller.PostCheck)
 	app.Post("/Task/new/{id:path}", Controller.NewTask)
 	app.Post("/Task/update/{id:path}", Controller.UpdateTask)
+	app.Get("/Task/delete/{id:path}", Controller.DeleteTask)
 	//app.Get("/Task/start/{id:path}", Controller.RunJMX)
 	//app.Get("/Task/stop/{id:path}", Controller.StopJMX)
 	//app.Get("/Task/getConfig/{id:path}", Controller.GetJMX)

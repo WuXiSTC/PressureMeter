@@ -13,7 +13,9 @@ func NewTask(ctx iris.Context) {
 	if err != nil {
 		return
 	}
-	defer util.LogE(file.Close())
+	defer func() {
+		util.LogE(file.Close())
+	}()
 
 	err = Service.CreateTask(file, taskId)
 	if err != nil {

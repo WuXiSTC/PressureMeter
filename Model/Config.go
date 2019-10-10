@@ -5,4 +5,4 @@ type Config struct {
 	jtlPath string
 }
 
-var Conf = Config{"jmx", "jtl"}
+var Conf = Config{"Data/jmx", "Data/jtl"}

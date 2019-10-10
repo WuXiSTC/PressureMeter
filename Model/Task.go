@@ -17,36 +17,45 @@ type task struct {
 
 //新建Task
 func Task(id string, configFile multipart.File) (*task, error) {
-	err := os.Mkdir(Conf.jmxPath, os.ModePerm) //没有目录先建目录
-	if err == nil {
-		util.Log("jmx dir " + Conf.jmxPath + " created")
+	err := os.MkdirAll(Conf.jmxPath, os.ModePerm) //没有目录先建目录
+	if err != nil {
+		return nil, err
+	}
+	err = os.MkdirAll(Conf.jtlPath, os.ModePerm) //没有目录先建目录
+	if err != nil {
+		return nil, err
 	}
 
-	pathPrefix := filepath.Join(Conf.jmxPath, id) //文件名是任务的id
-	configFilePath := pathPrefix + ".jmx"
-	resultFilePath := pathPrefix + ".jtl"
+	configFilePath := filepath.Join(Conf.jmxPath, id) + ".jmx" //文件名是任务的id
+	resultFilePath := filepath.Join(Conf.jtlPath, id) + ".jtl" //文件名是任务的id
 
-	out, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm) //打开文件流
+	jmx, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm) //打开文件流
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
-		util.LogE(out.Close())
+		util.LogE(jmx.Close())
 	}()
 
-	n, err := io.Copy(out, configFile) //写入配置文件
+	n, err := io.Copy(jmx, configFile) //写入配置文件
 	if err != nil {
 		return nil, err
 	}
 	util.Log(strconv.FormatInt(n, 10) + " byte jmx received, saved to " + configFilePath)
 
-	_ = os.Remove(resultFilePath) //删除之前的结果文件防止发生追加
+	jtl, err := os.OpenFile(resultFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm) //打开文件流
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		util.LogE(jtl.Close())
+	}()
 
 	return &task{id, configFilePath, resultFilePath}, nil
 }
 
-func (task *task) Delete() error {
-	_ = os.Remove(task.configFilePath) //删除之前的配置文件
-	_ = os.Remove(task.resultFilePath) //删除之前的结果文件防止发生追加
+func (tsk *task) Delete() error {
+	_ = os.Remove(tsk.configFilePath) //删除之前的配置文件
+	_ = os.Remove(tsk.resultFilePath) //删除之前的结果文件防止发生追加
 	return nil
 }

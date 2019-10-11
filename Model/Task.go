@@ -5,7 +5,6 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"path/filepath"
 	"strconv"
 )
 
@@ -17,17 +16,8 @@ type task struct {
 
 //新建Task
 func Task(id string, configFile multipart.File) (*task, error) {
-	err := os.MkdirAll(Conf.jmxPath, os.ModePerm) //没有目录先建目录
-	if err != nil {
-		return nil, err
-	}
-	err = os.MkdirAll(Conf.jtlPath, os.ModePerm) //没有目录先建目录
-	if err != nil {
-		return nil, err
-	}
-
-	configFilePath := filepath.Join(Conf.jmxPath, id) + ".jmx" //文件名是任务的id
-	resultFilePath := filepath.Join(Conf.jtlPath, id) + ".jtl" //文件名是任务的id
+	configFilePath := Conf.jmxPath(id) //文件名是任务的id
+	resultFilePath := Conf.jtlPath(id) //文件名是任务的id
 
 	jmx, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm) //打开文件流
 	if err != nil {

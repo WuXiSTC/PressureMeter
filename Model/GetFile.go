@@ -37,6 +37,8 @@ func (tsk *task) GetLogFilePath() string {
 		util.LogE(err)
 		return ""
 	}
-	defer func() { util.LogE(f.Close()) }()
+	tsk.command.Stdout = f
+	util.LogE(tsk.logfile.Close()) //强制缓冲区写入文件
+	tsk.logfile = f                //并且给新的输出流
 	return tsk.logFilePath
 }

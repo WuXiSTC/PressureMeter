@@ -5,6 +5,7 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+	"os/exec"
 	"strconv"
 )
 
@@ -13,10 +14,13 @@ type task struct {
 	configFilePath string
 	resultFilePath string
 	logFilePath    string
+	command        *exec.Cmd
+	logfile        *os.File
 }
 
 //创建一个新的空文件，或者清空文件
 func createFile(path string) error {
+	_ = os.Remove(path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, os.ModePerm) //打开文件流
 	if err != nil {
 		return err
@@ -52,7 +56,8 @@ func Task(id string, configFile multipart.File) (*task, error) {
 		return nil, err
 	}
 
-	return &task{id, configFilePath, resultFilePath, logFilePath}, nil
+	return &task{id, configFilePath, resultFilePath, logFilePath,
+		Conf.getCommand(id), nil}, nil
 }
 
 func (tsk *task) Delete() error {

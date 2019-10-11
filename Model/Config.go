@@ -31,12 +31,5 @@ func (conf *Config) logPath(id string) string {
 }
 
 func (conf *Config) getCommand(id string) *exec.Cmd {
-	return exec.Command(
-		"docker", "run",
-		"-v", "'$(pwd)/Data:/jmeter'",
-		"--rm",
-		"egaillardon/jmeter",
-		"--nongui",
-		"--testfile", "jmx/"+id+".jmx",
-		"--logfile", "jtl/"+id+".jtl")
+	return exec.Command("ping", "192.168.2.77", "-t")
 }

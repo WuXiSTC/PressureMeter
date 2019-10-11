@@ -1,21 +1,21 @@
 package Model
 
 type taskList struct {
-	tasks map[string]task
+	tasks map[string]*task
 }
 
-var TaskList = taskList{make(map[string]task)}
+var TaskList = taskList{make(map[string]*task)}
 
 //插入一个任务
 //
 //先删除ID对应的任务再插入
-func (tasklist *taskList) AddTask(tsk task) error {
+func (tasklist *taskList) AddTask(tsk *task) error {
 	tasklist.tasks[tsk.id] = tsk
 	return nil
 }
 
 //按照ID获取任务
-func (tasklist *taskList) GetTask(id string) (task, bool) {
+func (tasklist *taskList) GetTask(id string) (*task, bool) {
 	tsk, exists := tasklist.tasks[id]
 	return tsk, exists
 }

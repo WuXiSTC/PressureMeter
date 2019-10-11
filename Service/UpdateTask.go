@@ -11,7 +11,7 @@ func UpdateTask(jmx multipart.File, taskId string) error {
 	if err != nil {
 		return err
 	}
-	err = Model.TaskList.AddTask(*task)
+	err = Model.TaskList.AddTask(task)
 	if err != nil {
 		return err
 	}

@@ -23,3 +23,11 @@ func GetResultFilePath(id string) string {
 	}
 	return task.GetResultFilePath()
 }
+
+func GetLogFilePath(id string) string {
+	task, exists := Model.TaskList.GetTask(id)
+	if !exists {
+		return ""
+	}
+	return task.GetLogFilePath()
+}

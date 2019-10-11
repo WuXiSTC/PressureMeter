@@ -19,6 +19,7 @@ func main() {
 	app.Get("/Task/delete/{id:path}", Controller.DeleteTask)
 	app.Get("/Task/getConfig/{id:path}", Controller.GetConfig)
 	app.Get("/Task/getResult/{id:path}", Controller.GetResult)
+	app.Get("/Task/getLog/{id:path}", Controller.GetLog)
 	//app.Get("/Task/start/{id:path}", Controller.RunJMX)
 	//app.Get("/Task/stop/{id:path}", Controller.StopJMX)
 	//app.Get("/Task/getState/{id:path}", Controller.GetState)

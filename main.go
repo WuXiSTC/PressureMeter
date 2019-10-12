@@ -2,15 +2,22 @@ package main
 
 import (
 	"./Controller"
+	"./Service"
 	"./util"
+	"context"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 )
 
 //main 主函数
 func main() {
-
 	app := iris.New()
+	iris.RegisterOnInterrupt(func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 0)
+		defer cancel()
+		Service.Shutdown()
+		util.LogE(app.Shutdown(ctx))
+	})
 	app.Use(logger.New())
 	app.Post("/Task/new", Controller.PostCheck)
 	app.Post("/Task/update", Controller.PostCheck)

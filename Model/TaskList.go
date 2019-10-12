@@ -1,5 +1,10 @@
 package Model
 
+import (
+	"../util"
+	"fmt"
+)
+
 type taskList struct {
 	tasks map[string]*task
 }
@@ -36,4 +41,19 @@ func (tasklist *taskList) DelTask(id string) error {
 func (tasklist *taskList) Exists(id string) bool {
 	_, exists := tasklist.tasks[id]
 	return exists
+}
+
+func (tasklist *taskList) StopAll() {
+	for id, tsk := range tasklist.tasks {
+		util.LogE(tsk.Stop())
+		util.Log(fmt.Sprintf("task %s stopped", id))
+	}
+}
+
+func (tasklist *taskList) DelAll() {
+	for id, tsk := range tasklist.tasks {
+		util.LogE(tsk.Delete())
+		util.Log(fmt.Sprintf("task %s deleted", id))
+	}
+	tasklist.tasks = nil
 }

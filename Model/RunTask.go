@@ -20,9 +20,10 @@ func (tsk *task) Start() error {
 }
 
 func (tsk *task) Stop() error {
-	if err := tsk.command.Wait(); err != nil {
+	if err := tsk.command.Process.Kill(); err != nil {
 		return err
 	}
 	util.LogE(tsk.logfile.Close())
+	tsk.logfile = nil
 	return nil
 }

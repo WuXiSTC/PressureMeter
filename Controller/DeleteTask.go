@@ -5,6 +5,7 @@ import (
 	"github.com/kataras/iris"
 )
 
+//封装了Service删除任务
 func DeleteTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
 	err := Service.DeleteTask(taskId)

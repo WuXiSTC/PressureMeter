@@ -12,7 +12,7 @@ func StartTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
 	err := Service.StartTask(taskId)
 	if err != nil {
-		responseMsg(ctx, iris.Map{"ok": false, "message": err})
+		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 		return
 	}
 	responseMsg(ctx, iris.Map{"ok": true, "message": "启动成功"})
@@ -25,7 +25,7 @@ func StopTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
 	err := Service.StopTask(taskId)
 	if err != nil {
-		responseMsg(ctx, iris.Map{"ok": false, "message": err})
+		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 		return
 	}
 	responseMsg(ctx, iris.Map{"ok": true, "message": "停止成功"})

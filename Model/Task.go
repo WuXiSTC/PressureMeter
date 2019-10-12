@@ -77,14 +77,8 @@ func (tsk *task) Delete() error {
 	if tsk.state == STATE_RUNNING {
 		return errors.New("任务正在运行，无法删除")
 	}
-	if err := os.Remove(tsk.configFilePath); err != nil {
-		return err
-	} //删除之前的配置文件
-	if err := os.Remove(tsk.resultFilePath); err != nil {
-		return err
-	} //删除之前的结果文件防止发生追加
-	if err := os.Remove(tsk.logFilePath); err != nil {
-		return err
-	} //删除之前的日志文件防止发生追加
+	_ = os.Remove(tsk.configFilePath) //删除之前的配置文件
+	_ = os.Remove(tsk.resultFilePath) //删除之前的结果文件防止发生追加
+	_ = os.Remove(tsk.logFilePath)    //删除之前的日志文件防止发生追加
 	return nil
 }

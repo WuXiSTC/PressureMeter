@@ -23,7 +23,7 @@ func NewTask(ctx iris.Context) {
 	err = Service.CreateTask(file, taskId)
 	if err != nil {
 		util.LogE(err)
-		responseMsg(ctx, iris.Map{"ok": false, "message": err})
+		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 		return
 	}
 	responseMsg(ctx, iris.Map{"ok": true, "message": "任务创建成功"})

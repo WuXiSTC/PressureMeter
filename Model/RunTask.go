@@ -19,11 +19,18 @@ func (tsk *task) Start() error {
 	return nil
 }
 
+//停止任务运行
+//
+//先停止并删除进程再释放文件
 func (tsk *task) Stop() error {
-	if err := tsk.command.Process.Kill(); err != nil {
-		return err
+	if tsk.command.Process != nil {
+		if err := tsk.command.Process.Kill(); err != nil {
+			return err
+		}
+		tsk.command.Process = nil
 	}
 	util.LogE(tsk.logfile.Close())
 	tsk.logfile = nil
+	util.Log("task " + tsk.id + " stopped")
 	return nil
 }

@@ -2,7 +2,6 @@ package Model
 
 import (
 	"../util"
-	"fmt"
 )
 
 type taskList struct {
@@ -26,13 +25,10 @@ func (tasklist *taskList) GetTask(id string) (*task, bool) {
 }
 
 //按照ID删除任务
-//
-//如果任务存在就调用任务的自删除然后从列表中删除任务并返回错误信息，不存在就直接返回无错误
 func (tasklist *taskList) DelTask(id string) error {
 	tsk, exists := tasklist.tasks[id]
 	if exists {
-		err := tsk.Delete()
-		if err != nil {
+		if err := tsk.Delete(); err != nil {
 			return err
 		}
 		delete(tasklist.tasks, id)
@@ -45,17 +41,25 @@ func (tasklist *taskList) Exists(id string) bool {
 	return exists
 }
 
-func (tasklist *taskList) StopAll() {
-	for id, tsk := range tasklist.tasks {
-		util.LogE(tsk.Stop())
-		util.Log(fmt.Sprintf("task %s stopped", id))
+//停止所有任务
+func (tasklist *taskList) StopAll() error {
+	for _, tsk := range tasklist.tasks {
+		if err := tsk.Stop(); err != nil {
+			return err
+		}
 	}
+	util.Log("All tasks stopped")
+	return nil
 }
 
-func (tasklist *taskList) DelAll() {
-	for id, tsk := range tasklist.tasks {
-		util.LogE(tsk.Delete())
-		util.Log(fmt.Sprintf("task %s deleted", id))
+//删除所有任务
+func (tasklist *taskList) DelAll() error {
+	for _, tsk := range tasklist.tasks {
+		if err := tsk.Delete(); err != nil {
+			return err
+		}
 	}
+	util.Log("All tasks deleted")
 	tasklist.tasks = nil
+	return nil
 }

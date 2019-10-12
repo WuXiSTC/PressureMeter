@@ -16,6 +16,7 @@ func (tsk *task) Start() error {
 		util.LogE(f.Close())
 		return err
 	}
+	tsk.state = STATE_RUNNING
 	return nil
 }
 
@@ -32,6 +33,7 @@ func (tsk *task) Stop() error {
 	util.LogE(tsk.logfile.Close())
 	tsk.command.Stdout = nil
 	tsk.logfile = nil
+	tsk.state = STATE_STOPPED
 	util.Log("task " + tsk.id + " stopped")
 	return nil
 }

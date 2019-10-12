@@ -2,11 +2,18 @@ package Model
 
 import (
 	"../util"
+	"errors"
 	"io"
 	"mime/multipart"
 	"os"
 	"os/exec"
 	"strconv"
+)
+
+const (
+	STATE_STOPPED = iota
+	STATE_QUEUEING
+	STATE_RUNNING
 )
 
 type task struct {
@@ -16,6 +23,7 @@ type task struct {
 	logFilePath    string    //日志文件的路径
 	command        *exec.Cmd //要执行的指令
 	logfile        *os.File  //日志文件流
+	state          int       //运行状态
 }
 
 //创建一个新的空文件，或者清空文件
@@ -42,7 +50,7 @@ func Task(id string, configFile multipart.File) (*task, error) {
 		return nil, err
 	}
 	defer func() {
-		util.LogE(jmx.Close())
+		util.LogE(jmx.Close()) //结束时关闭
 	}()
 
 	n, err := io.Copy(jmx, configFile) //写入配置文件
@@ -52,22 +60,22 @@ func Task(id string, configFile multipart.File) (*task, error) {
 	util.Log(strconv.FormatInt(n, 10) + " byte jmx received, saved to " + configFilePath)
 
 	if err = createFile(resultFilePath); err != nil {
-		return nil, err
+		return nil, err //创建结果文件
 	}
 	if err = createFile(logFilePath); err != nil {
-		return nil, err
+		return nil, err //创建日志文件
 	}
 
 	return &task{id, configFilePath, resultFilePath, logFilePath,
-		Conf.getCommand(id), nil}, nil
+		Conf.getCommand(id), nil, STATE_STOPPED}, nil
 }
 
 //删除任务，顺带删除任务相关文件
 //
 //先停止任务，然后删除任务相关文件
 func (tsk *task) Delete() error {
-	if err := tsk.Stop(); err != nil {
-		return err
+	if tsk.state == STATE_RUNNING {
+		return errors.New("任务正在运行，无法删除")
 	}
 	if err := os.Remove(tsk.configFilePath); err != nil {
 		return err

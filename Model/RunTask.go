@@ -17,6 +17,16 @@ func (tsk *task) Start() error {
 		return err
 	}
 	tsk.state = STATE_RUNNING
+
+	go func() { //新开一个线程等待完成，并在线程完成后清理资源
+		util.LogE(tsk.command.Wait())
+		util.LogE(tsk.logfile.Close())
+		tsk.command.Stdout = nil
+		tsk.logfile = nil
+		tsk.command = Conf.getCommand(tsk.id) //进程完成后重开进程
+		tsk.state = STATE_STOPPED
+		util.Log("task " + tsk.id + " stopped")
+	}()
 	return nil
 }
 
@@ -24,16 +34,13 @@ func (tsk *task) Start() error {
 //
 //先停止并删除进程再释放文件
 func (tsk *task) Stop() error {
+	if tsk.state == STATE_STOPPED { //如果已经停止就直接成功
+		return nil
+	}
 	if tsk.command.Process != nil {
-		if err := tsk.command.Process.Kill(); err != nil {
+		if err := tsk.command.Process.Kill(); err != nil { //停止就是向进程发送kill命令
 			return err
 		}
-		tsk.command.Process = nil
 	}
-	util.LogE(tsk.logfile.Close())
-	tsk.command.Stdout = nil
-	tsk.logfile = nil
-	tsk.state = STATE_STOPPED
-	util.Log("task " + tsk.id + " stopped")
 	return nil
 }

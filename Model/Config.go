@@ -31,5 +31,5 @@ func (conf *Config) logPath(id string) string {
 }
 
 func (conf *Config) getCommand(id string) *exec.Cmd {
-	return exec.Command("ping", "192.168.2.77", "-t")
+	return exec.Command("ping", "192.168.2.77", "-n", "10")
 }

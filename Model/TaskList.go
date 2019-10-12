@@ -68,3 +68,5 @@ func (tasklist *taskList) DelAll() error {
 	tasklist.tasks = nil
 	return nil
 }
+
+//TODO:队列式执行任务

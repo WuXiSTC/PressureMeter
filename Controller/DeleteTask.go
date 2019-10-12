@@ -13,6 +13,7 @@ func DeleteTask(ctx iris.Context) {
 	err := Service.DeleteTask(taskId)
 	if err != nil {
 		responseMsg(ctx, iris.Map{"ok": false, "message": err})
+		return
 	}
 	responseMsg(ctx, iris.Map{"ok": true, "message": "删除成功"})
 }

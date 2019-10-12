@@ -26,6 +26,8 @@ func (tasklist *taskList) GetTask(id string) (*task, bool) {
 }
 
 //按照ID删除任务
+//
+//如果任务存在就调用任务的自删除然后从列表中删除任务并返回错误信息，不存在就直接返回无错误
 func (tasklist *taskList) DelTask(id string) error {
 	tsk, exists := tasklist.tasks[id]
 	if exists {

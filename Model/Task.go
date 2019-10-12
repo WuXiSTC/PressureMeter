@@ -66,3 +66,5 @@ func (tsk *task) Delete() error {
 	_ = os.Remove(tsk.logFilePath)    //删除之前的日志文件防止发生追加
 	return nil
 }
+
+//TODO:删除任务要先检查停止状态

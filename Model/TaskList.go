@@ -2,6 +2,7 @@ package Model
 
 import (
 	"../util"
+	"errors"
 )
 
 type taskList struct {
@@ -12,8 +13,12 @@ var TaskList = taskList{make(map[string]*task)}
 
 //插入一个任务
 //
-//先删除ID对应的任务再插入
+//应该先删除ID对应的任务再插入
 func (tasklist *taskList) AddTask(tsk *task) error {
+	_, exists := tasklist.tasks[tsk.id]
+	if exists {
+		return errors.New("任务已存在")
+	}
 	tasklist.tasks[tsk.id] = tsk
 	return nil
 }

@@ -7,9 +7,15 @@ import (
 )
 
 //新建任务
+//
+//先检查任务是否存在再新建任务
 func CreateTask(jmx multipart.File, taskId string) error {
 	if Model.TaskList.Exists(taskId) {
-		return errors.New("此任务已存在")
+		return errors.New("任务已存在")
 	}
-	return UpdateTask(jmx, taskId)
+	task, err := Model.Task(taskId, jmx)
+	if err != nil {
+		return err
+	}
+	return Model.TaskList.AddTask(task)
 }

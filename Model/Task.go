@@ -21,7 +21,7 @@ type task struct {
 //创建一个新的空文件，或者清空文件
 func createFile(path string) error {
 	_ = os.Remove(path)
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, os.ModePerm) //打开文件流
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm) //打开文件流
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func Task(id string, configFile multipart.File) (*task, error) {
 	resultFilePath := Conf.jtlPath(id) //文件名是任务的id
 	logFilePath := Conf.logPath(id)    //文件名是任务的id
 
-	jmx, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm) //打开文件流
+	jmx, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm) //打开文件流
 	if err != nil {
 		return nil, err
 	}

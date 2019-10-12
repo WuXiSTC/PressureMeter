@@ -6,7 +6,7 @@ import (
 )
 
 func (tsk *task) Start() error {
-	f, err := os.OpenFile(tsk.logFilePath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	f, err := os.OpenFile(tsk.logFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -30,6 +30,7 @@ func (tsk *task) Stop() error {
 		tsk.command.Process = nil
 	}
 	util.LogE(tsk.logfile.Close())
+	tsk.command.Stdout = nil
 	tsk.logfile = nil
 	util.Log("task " + tsk.id + " stopped")
 	return nil

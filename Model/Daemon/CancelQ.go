@@ -2,17 +2,21 @@ package Daemon
 
 import "sync"
 
-type count struct { //一个线程安全的取消值记录量，用于取消列表记录中在当前队列中每个各有多少次取消
+//一个线程安全的取消值记录量，用于取消列表记录中在当前队列中每个各有多少次取消
+type count struct {
 	n  uint64
 	mu *sync.RWMutex
 }
 
-func (c *count) more() { //加一次
+//加一次
+func (c *count) more() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.n++
 }
-func (c *count) less() { //减一次
+
+//减一次
+func (c *count) less() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.n > 0 {

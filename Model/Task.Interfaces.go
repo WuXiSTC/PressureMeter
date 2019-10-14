@@ -5,12 +5,12 @@ import (
 	"os"
 )
 
-func (tsk *task) getid() string {
+func (tsk *task) GetID() string {
 	return tsk.id
 }
 
 //用于Daemon的接口，开始任务执行
-func (tsk *task) start() error {
+func (tsk *task) Start() error {
 	f, err := os.OpenFile(tsk.logFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		return err
@@ -26,20 +26,23 @@ func (tsk *task) start() error {
 }
 
 //用于Daemon的接口，等待任务完成，完成后清理资源
-func (tsk *task) wait() {
-	util.LogE(tsk.command.Wait())
+func (tsk *task) Wait() error {
+	if err := tsk.command.Wait(); err != nil {
+		return err
+	}
 	util.LogE(tsk.logfile.Close())
 	tsk.command.Stdout = nil
 	tsk.logfile = nil
 	tsk.command = Conf.getCommand(tsk.id) //进程完成后重开进程
 	tsk.state = STATE_STOPPED
 	util.Log("task " + tsk.id + " stopped")
+	return nil
 }
 
 //用于Daemon的接口，停止任务运行
 //
 //先停止并删除进程再释放文件
-func (tsk *task) stop() error {
+func (tsk *task) Stop() error {
 	if tsk.state == STATE_STOPPED { //如果已经停止就直接成功
 		return nil
 	}

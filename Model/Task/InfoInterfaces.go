@@ -39,3 +39,7 @@ func (tsk *task) GetLogFilePath() string {
 	tsk.logfile = f                //并且给新的输出流
 	return tsk.logFilePath
 }
+
+func (tsk *task) GetStateCode() int {
+	return tsk.state
+}

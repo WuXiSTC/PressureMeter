@@ -1,7 +1,7 @@
 package Model
 
 import (
-	"../util"
+	"../../util"
 	"os"
 )
 

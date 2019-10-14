@@ -1,7 +1,7 @@
 package Model
 
 import (
-	"../util"
+	"../../util"
 	"errors"
 	"io"
 	"mime/multipart"
@@ -10,10 +10,10 @@ import (
 	"strconv"
 )
 
-const (
-	STATE_STOPPED = iota
-	STATE_QUEUEING
-	STATE_RUNNING
+const ( //Task的三种状态
+	STATE_STOPPED  = iota //停止
+	STATE_QUEUEING        //在队列中
+	STATE_RUNNING         //正在运行
 )
 
 type task struct {
@@ -73,12 +73,18 @@ func Task(id string, configFile multipart.File) (*task, error) {
 //删除任务，顺带删除任务相关文件
 //
 //先停止任务，然后删除任务相关文件
-func (tsk *task) Delete() error {
-	if tsk.state == STATE_RUNNING {
-		return errors.New("任务正在运行，无法删除")
+func (tsk *task) delete() error {
+	if tsk.state != STATE_STOPPED {
+		return errors.New("任务未停止，无法删除")
 	}
-	_ = os.Remove(tsk.configFilePath) //删除之前的配置文件
-	_ = os.Remove(tsk.resultFilePath) //删除之前的结果文件防止发生追加
-	_ = os.Remove(tsk.logFilePath)    //删除之前的日志文件防止发生追加
+	if err := os.Remove(tsk.configFilePath); err != nil { //删除之前的配置文件
+		return err
+	}
+	if err := os.Remove(tsk.resultFilePath); err != nil { //删除之前的结果文件防止发生追加
+		return err
+	}
+	if err := os.Remove(tsk.logFilePath); err != nil { //删除之前的日志文件防止发生追加
+		return err
+	}
 	return nil
 }

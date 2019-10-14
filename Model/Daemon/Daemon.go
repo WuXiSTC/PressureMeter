@@ -10,7 +10,6 @@ type TaskInterface interface {
 	GetID() string //获取任务ID
 	Start() error  //启动
 	Wait() error   //等待
-	Stop() error   //停止
 }
 
 //设置类型
@@ -35,7 +34,6 @@ func run1task() {
 		util.LogE((*tsk).Wait())
 	} else { //运行出错则停止
 		util.LogE(err)
-		util.LogE((*tsk).Stop())
 	}
 }
 

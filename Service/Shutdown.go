@@ -2,7 +2,12 @@ package Service
 
 import "../Model"
 
-func Shutdown() {
-	Model.TaskList.StopAll()
-	Model.TaskList.DelAll()
+func Shutdown() error {
+	if err := Model.TaskList.StopAll(); err != nil {
+		return err
+	}
+	if err := Model.TaskList.DelAll(); err != nil {
+		return err
+	}
+	return nil
 }

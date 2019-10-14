@@ -37,7 +37,7 @@ func createFile(path string) error {
 //新建Task，相当于Task的构造函数
 //
 //输入值是任务ID和配置文件流，返回新建的任务指针和错误信息
-func New(id string, configFile multipart.File) (*task, error) {
+var Constructor = func(id string, configFile multipart.File) (*task, error) {
 	configFilePath := Conf.jmxPath(id) //文件名是任务的id
 	resultFilePath := Conf.jtlPath(id) //文件名是任务的id
 	logFilePath := Conf.logPath(id)    //文件名是任务的id

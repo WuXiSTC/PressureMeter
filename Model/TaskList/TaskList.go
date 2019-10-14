@@ -15,12 +15,12 @@ var TaskList = taskList{make(map[string]*TaskInterface)}
 //插入一个任务
 //
 //应该先删除ID对应的任务再插入
-func (tasklist *taskList) AddTask(tsk *TaskInterface) error {
-	_, exists := tasklist.tasks[(*tsk).GetID()]
+func (tasklist *taskList) AddTask(tsk TaskInterface) error {
+	_, exists := tasklist.tasks[tsk.GetID()]
 	if exists {
 		return errors.New("任务已存在")
 	}
-	tasklist.tasks[(*tsk).GetID()] = tsk
+	tasklist.tasks[tsk.GetID()] = &tsk
 	return nil
 }
 

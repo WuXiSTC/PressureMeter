@@ -6,7 +6,7 @@ import "../Model"
 //
 //ID存在则返回路径，否则返回空字符串
 func GetConfigFilePath(id string) string {
-	task, exists := Model.TaskList.GetTask(id)
+	task, exists := Model.TaskList.GetInfo(id)
 	if !exists {
 		return ""
 	}
@@ -17,7 +17,7 @@ func GetConfigFilePath(id string) string {
 //
 //ID存在则返回路径，否则返回空字符串
 func GetResultFilePath(id string) string {
-	task, exists := Model.TaskList.GetTask(id)
+	task, exists := Model.TaskList.GetInfo(id)
 	if !exists {
 		return ""
 	}
@@ -25,7 +25,7 @@ func GetResultFilePath(id string) string {
 }
 
 func GetLogFilePath(id string) string {
-	task, exists := Model.TaskList.GetTask(id)
+	task, exists := Model.TaskList.GetInfo(id)
 	if !exists {
 		return ""
 	}

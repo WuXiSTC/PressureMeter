@@ -3,23 +3,25 @@ package Model
 import (
 	"../util"
 	"./Daemon"
-	"./Task"
+	task "./Task"
 	tasklist "./TaskList"
 )
 
 type Config struct {
 	DaemonConf Daemon.Config
-	TaskConf   Task.Config
+	TaskConf   task.Config
 }
 
 var Conf = Config{Daemon.Config{TaskQSize: 1000, TaskAccN: 4},
-	Task.Config{JmxDir: "Data/jmx", JtlDir: "Data/jtl", LogDir: "Data/log"}}
+	task.Config{JmxDir: "Data/jmx", JtlDir: "Data/jtl", LogDir: "Data/log"}}
 
 var TaskList = tasklist.TaskList
+
+var Task = task.Constructor
 
 //Model层组件初始化
 func Init(configPath string) {
 	util.GetConf(configPath, Conf)
 	Daemon.Init(Conf.DaemonConf)
-	Task.Init(Conf.TaskConf)
+	task.Init(Conf.TaskConf)
 }

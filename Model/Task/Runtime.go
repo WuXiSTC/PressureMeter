@@ -1,4 +1,4 @@
-package Model
+package Task
 
 import (
 	"../../util"

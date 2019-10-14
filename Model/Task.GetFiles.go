@@ -5,12 +5,7 @@ import (
 	"os"
 )
 
-func (tsk *task) GetConfigFileStream() *os.File {
-	out, err := os.OpenFile(tsk.configFilePath, os.O_RDONLY, os.ModePerm) //打开文件流
-	util.LogE(err)
-	return out
-}
-
+//获取设置文件路径，没有就先创建
 func (tsk *task) GetConfigFilePath() string {
 	f, err := os.OpenFile(tsk.configFilePath, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	if err != nil {
@@ -21,6 +16,7 @@ func (tsk *task) GetConfigFilePath() string {
 	return tsk.configFilePath
 }
 
+//获取结果文件路径，没有就先创建
 func (tsk *task) GetResultFilePath() string {
 	f, err := os.OpenFile(tsk.resultFilePath, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	if err != nil {
@@ -31,6 +27,7 @@ func (tsk *task) GetResultFilePath() string {
 	return tsk.resultFilePath
 }
 
+//获取日志文件路径，没有就先创建
 func (tsk *task) GetLogFilePath() string {
 	f, err := os.OpenFile(tsk.logFilePath, os.O_APPEND|os.O_CREATE, os.ModePerm)
 	if err != nil {

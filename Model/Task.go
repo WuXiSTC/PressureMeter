@@ -88,8 +88,3 @@ func (tsk *task) delete() error {
 	}
 	return nil
 }
-
-//此函数用于导出task.stop方法
-func (tsk *task) Stop() error {
-	return tsk.stop()
-}

@@ -15,21 +15,25 @@ type Config struct {
 
 var Conf = Config{"Data/jmx", "Data/jtl", "Data/log"}
 
+//通过id获取jmx文件路径
 func (conf *Config) jmxPath(id string) string {
 	util.LogE(os.MkdirAll(Conf.JmxDir, os.ModePerm)) //没有目录先建目录
 	return filepath.Join(conf.JmxDir, id) + ".jmx"   //文件名是任务的id
 }
 
+//通过id获取jtl文件路径
 func (conf *Config) jtlPath(id string) string {
 	util.LogE(os.MkdirAll(Conf.JtlDir, os.ModePerm)) //没有目录先建目录
 	return filepath.Join(conf.JtlDir, id) + ".jtl"   //文件名是任务的id
 }
 
+//通过id获取log文件路径
 func (conf *Config) logPath(id string) string {
 	util.LogE(os.MkdirAll(Conf.LogDir, os.ModePerm)) //没有目录先建目录
 	return filepath.Join(conf.LogDir, id) + ".log"   //文件名是任务的id
 }
 
+//通过id获取要执行的指令
 func (conf *Config) getCommand(id string) *exec.Cmd {
 	return exec.Command("ping", "192.168.2.77", "-n", "10")
 }

@@ -7,12 +7,12 @@ type count struct { //一个线程安全的取消值记录量，用于取消列�
 	mu *sync.RWMutex
 }
 
-func (c *count) more() { //取消一次
+func (c *count) more() { //加一次
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.n++
 }
-func (c *count) less() { //撤销取消一次
+func (c *count) less() { //减一次
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.n > 0 {

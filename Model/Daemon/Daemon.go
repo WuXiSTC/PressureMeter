@@ -33,10 +33,11 @@ func Init(Conf Config) {
 					} else { //运行出错则停止
 						tsk.stop()
 					}
+					Qn.less() //队列中任务数量-1
 				} else { //如果取消就不运行
 					cancels.less()
 				}
-				Qn.less() //队列中任务数量-1
+				Qn.less()
 			}
 		}()
 	}

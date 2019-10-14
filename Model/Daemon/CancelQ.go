@@ -40,5 +40,4 @@ func CancelTask(id string) {
 	} else {
 		canceln.more() //取消次数加一
 	}
-	Qn.less() //记录队列中任务数量
 }

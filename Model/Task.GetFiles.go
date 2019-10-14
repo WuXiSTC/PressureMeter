@@ -1,7 +1,7 @@
-package Task
+package Model
 
 import (
-	"../../util"
+	"../util"
 	"os"
 )
 

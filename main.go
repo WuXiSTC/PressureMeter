@@ -2,6 +2,7 @@ package main
 
 import (
 	"./Controller"
+	"./Model"
 	"./Service"
 	"./util"
 	"context"
@@ -12,6 +13,7 @@ import (
 //main 主函数
 func main() {
 	app := iris.New()
+	Model.Init("Config.yaml")
 	iris.RegisterOnInterrupt(func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 0)
 		defer cancel()

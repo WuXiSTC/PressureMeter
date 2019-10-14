@@ -14,8 +14,8 @@ type TaskInterface interface {
 
 //设置类型
 type Config struct {
-	TaskAccN  uint64
-	TaskQSize uint64
+	TaskAccN  uint64 `yaml:"TaskAccN"`
+	TaskQSize uint64 `yaml:"TaskQSize"`
 }
 
 var taskQ chan *TaskInterface         //任务队列，用以存储要执行的任务的地址

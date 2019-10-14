@@ -1,7 +1,8 @@
-package Model
+package Task
 
 import (
-	"../util"
+	"../../util"
+	"../TaskList"
 	"os"
 )
 
@@ -21,7 +22,7 @@ func (tsk *task) Start() error {
 		util.LogE(f.Close())
 		return err
 	}
-	tsk.state = STATE_RUNNING
+	tsk.state = TaskList.STATE_RUNNING
 	return nil
 }
 
@@ -34,7 +35,7 @@ func (tsk *task) Wait() error {
 	tsk.command.Stdout = nil
 	tsk.logfile = nil
 	tsk.command = Conf.getCommand(tsk.id) //进程完成后重开进程
-	tsk.state = STATE_STOPPED
+	tsk.state = TaskList.STATE_STOPPED
 	util.Log("task " + tsk.id + " stopped")
 	return nil
 }
@@ -43,7 +44,7 @@ func (tsk *task) Wait() error {
 //
 //先停止并删除进程再释放文件
 func (tsk *task) Stop() error {
-	if tsk.state == STATE_STOPPED { //如果已经停止就直接成功
+	if tsk.state == TaskList.STATE_STOPPED { //如果已经停止就直接成功
 		return nil
 	}
 	if tsk.command.Process != nil {

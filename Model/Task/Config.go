@@ -1,7 +1,7 @@
-package Model
+package Task
 
 import (
-	"../util"
+	"../../util"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,6 +14,10 @@ type Config struct {
 }
 
 var Conf = Config{"Data/jmx", "Data/jtl", "Data/log"}
+
+func Init(conf Config) {
+	Conf = conf
+}
 
 //通过id获取jmx文件路径
 func (conf *Config) jmxPath(id string) string {

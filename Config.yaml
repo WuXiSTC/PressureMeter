@@ -1,0 +1,5 @@
+JmxDir: Data/jmx #存放jmx文件的目录位置
+JtlDir: Data/jtl #存放jtl结果文件的目录位置
+LogDir: Data/log #存放日志文件的目录位置
+TaskAccN: 2 #可以同时进行的任务数量
+TaskQSize: 100 #任务队列缓冲区大小

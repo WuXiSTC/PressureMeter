@@ -1,7 +1,7 @@
 package Controller
 
 import (
-	"../Service"
+	"../Model"
 	"github.com/kataras/iris"
 )
 
@@ -10,7 +10,7 @@ import (
 //返回启动是否成功和错误信息
 func StartTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
-	err := Service.StartTask(taskId)
+	err := Model.TaskList.Start(taskId)
 	if err != nil {
 		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 		return
@@ -23,7 +23,7 @@ func StartTask(ctx iris.Context) {
 //返回停止是否成功和错误信息
 func StopTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
-	err := Service.StopTask(taskId)
+	err := Model.TaskList.Stop(taskId)
 	if err != nil {
 		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 		return

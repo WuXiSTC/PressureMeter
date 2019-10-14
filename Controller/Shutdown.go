@@ -1,4 +1,4 @@
-package Service
+package Controller
 
 import "../Model"
 

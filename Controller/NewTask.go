@@ -1,7 +1,7 @@
 package Controller
 
 import (
-	"../Service"
+	"../Model"
 	"../util"
 	"github.com/kataras/iris"
 )
@@ -20,7 +20,7 @@ func NewTask(ctx iris.Context) {
 	}()
 
 	taskId := ctx.Params().Get("id")
-	err = Service.CreateTask(file, taskId)
+	err = Model.AddNewTask(taskId, file)
 	if err != nil {
 		util.LogE(err)
 		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})

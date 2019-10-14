@@ -8,7 +8,7 @@ const ( //Task的三种状态
 	STATE_RUNNING         //正在运行
 )
 
-type taskInfo interface {
+type TaskInfo interface {
 	GetConfigFilePath() string
 	GetResultFilePath() string
 	GetLogFilePath() string
@@ -17,7 +17,7 @@ type taskInfo interface {
 
 type TaskInterface interface {
 	Daemon.TaskInterface
-	taskInfo
+	TaskInfo
 	Stop() error
 	Delete() error
 	GetState() int

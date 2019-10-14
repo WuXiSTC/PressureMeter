@@ -3,7 +3,6 @@ package main
 import (
 	"./Controller"
 	"./Model"
-	"./Service"
 	"./util"
 	"context"
 	"github.com/kataras/iris"
@@ -17,7 +16,7 @@ func main() {
 	iris.RegisterOnInterrupt(func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 0)
 		defer cancel()
-		Service.Shutdown()
+		util.LogE(Controller.Shutdown())
 		util.LogE(app.Shutdown(ctx))
 	})
 	app.Use(logger.New())

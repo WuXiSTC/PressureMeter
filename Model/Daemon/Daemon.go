@@ -19,12 +19,16 @@ type Config struct {
 	TaskQSize uint64 `yaml:"TaskQSize"`
 }
 
+var conf Config                       //配置信息
 var taskQ chan *TaskInterface         //任务队列，用以存储要执行的任务的地址
 var Qn = &count{0, new(sync.RWMutex)} //任务队列当前长度
 
 //运行一个任务
 func run1task(i uint64) {
 	tsk := <-taskQ
+	if tsk == nil {
+		return
+	}
 	util.Log("Daemon " + strconv.Itoa(int(i)) + ": get " + (*tsk).GetID())
 	Qn.less() //队列中任务数量-1
 	cancel, exists := cancelQ[(*tsk).GetID()]
@@ -42,15 +46,18 @@ func run1task(i uint64) {
 }
 
 var toStop = false
+var stopped = make(chan uint64)
 
 //按照配置文件创建任务队列和执行任务的后台goroutine
 func Init(Conf Config) {
-	taskQ = make(chan *TaskInterface, Conf.TaskQSize) //初始化任务队列
-	for i := uint64(0); i < Conf.TaskAccN; i++ {
+	conf = Conf
+	taskQ = make(chan *TaskInterface, conf.TaskQSize) //初始化任务队列
+	for i := uint64(0); i < conf.TaskAccN; i++ {
 		go func(goi uint64) { //后台任务处理goroutine
 			for !toStop { //如果检测到要停止了就停止
 				run1task(goi)
 			}
+			stopped <- goi
 		}(i)
 		util.Log("Daemon " + strconv.Itoa(int(i)) + " started")
 	}
@@ -67,4 +74,9 @@ func AddTask(tsk TaskInterface) {
 //停止Daemon运行
 func Stop() {
 	toStop = true
+	close(taskQ)
+	for i := uint64(0); i < conf.TaskAccN; i++ {
+		goi := <-stopped
+		util.Log("Daemon " + strconv.Itoa(int(goi)) + " stopped")
+	}
 }

@@ -54,7 +54,7 @@ var Constructor = func(id string, configFile multipart.File) (*task, error) {
 
 	tsk := &task{&id, &configFilePath, &resultFilePath, &logFilePath,
 		Conf.getCommand(id), nil, new(int), new(sync.RWMutex)}
-	*tsk.state = TaskList.STATE_STOPPED
+	tsk.SetState(TaskList.STATE_STOPPED)
 	return tsk, nil
 }
 
@@ -62,7 +62,7 @@ var Constructor = func(id string, configFile multipart.File) (*task, error) {
 //
 //先停止任务，然后删除任务相关文件
 func (tsk *task) Delete() error {
-	if *tsk.state != TaskList.STATE_STOPPED {
+	if tsk.GetState() != TaskList.STATE_STOPPED {
 		return errors.New("任务未停止，无法删除")
 	}
 	if err := util.DeleteFile(*tsk.configFilePath); err != nil { //删除之前的配置文件

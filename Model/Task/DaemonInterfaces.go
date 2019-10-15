@@ -22,21 +22,18 @@ func (tsk *task) Start() error {
 		util.LogE(f.Close())
 		return err
 	}
-	*tsk.state = TaskList.STATE_RUNNING
+	tsk.SetState(TaskList.STATE_RUNNING)
 	return nil
 }
 
 //用于Daemon的接口，等待任务完成，完成后清理资源
 func (tsk *task) Wait() error {
-	if err := tsk.command.Wait(); err != nil {
-		return err
-	}
+	util.LogE(tsk.command.Wait())
 	util.LogE(tsk.logfile.Close())
 	tsk.command.Stdout = nil
 	tsk.logfile = nil
 	tsk.command = Conf.getCommand(*tsk.id) //进程完成后重开进程
-	*tsk.state = TaskList.STATE_STOPPED
-	util.Log("task " + *tsk.id + " stopped")
+	tsk.SetState(TaskList.STATE_STOPPED)
 	return nil
 }
 
@@ -44,7 +41,7 @@ func (tsk *task) Wait() error {
 //
 //先停止并删除进程再释放文件
 func (tsk *task) Stop() error {
-	if *tsk.state == TaskList.STATE_STOPPED { //如果已经停止就直接成功
+	if tsk.GetState() == TaskList.STATE_STOPPED { //如果已经停止就直接成功
 		return nil
 	}
 	if tsk.command.Process != nil {

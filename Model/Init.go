@@ -10,8 +10,8 @@ import (
 )
 
 type Config struct {
-	DaemonConf Daemon.Config
-	TaskConf   task.Config
+	DaemonConf Daemon.Config `yaml:",inline"`
+	TaskConf   task.Config   `yaml:",inline"`
 }
 
 var Conf = Config{Daemon.Config{TaskQSize: 1000, TaskAccN: 4},
@@ -23,7 +23,7 @@ var Task = task.Constructor
 
 //Model层组件初始化
 func Init(configPath string) {
-	util.GetConf(configPath, Conf)
+	util.GetConf(configPath, &Conf)
 	Daemon.Init(Conf.DaemonConf)
 	task.Init(Conf.TaskConf)
 }

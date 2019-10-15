@@ -25,9 +25,13 @@ func (tasklist *taskList) AddTask(tsk TaskInterface) error {
 }
 
 //按照ID获取任务
-func (tasklist *taskList) GetInfo(id string) (TaskInfo, bool) {
+func (tasklist *taskList) GetInfo(id string) (*TaskInfo, bool) {
 	tsk, exists := tasklist.tasks[id]
-	return *tsk, exists
+	if tsk != nil {
+		var tskI TaskInfo = *tsk
+		return &tskI, exists
+	}
+	return nil, exists
 }
 
 //按照ID删除任务

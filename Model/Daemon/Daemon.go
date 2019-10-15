@@ -2,6 +2,7 @@ package Daemon
 
 import (
 	"../../util"
+	"strconv"
 	"sync"
 )
 
@@ -22,8 +23,9 @@ var taskQ chan *TaskInterface         //任务队列，用以存储要执行的�
 var Qn = &count{0, new(sync.RWMutex)} //任务队列当前长度
 
 //运行一个任务
-func run1task() {
+func run1task(i uint64) {
 	tsk := <-taskQ
+	util.Log("Daemon " + strconv.Itoa(int(i)) + ": get " + (*tsk).GetID())
 	Qn.less() //队列中任务数量-1
 	cancel, exists := cancelQ[(*tsk).GetID()]
 	if exists && cancel.get() > 0 { //如果取消就不运行
@@ -31,7 +33,9 @@ func run1task() {
 		return
 	}
 	if err := (*tsk).Start(); err == nil { //否则就运行
+		util.Log("Daemon " + strconv.Itoa(int(i)) + ": started " + (*tsk).GetID())
 		util.LogE((*tsk).Wait())
+		util.Log("Daemon " + strconv.Itoa(int(i)) + ": stopped " + (*tsk).GetID())
 	} else { //运行出错则停止
 		util.LogE(err)
 	}
@@ -43,11 +47,12 @@ var toStop = false
 func Init(Conf Config) {
 	taskQ = make(chan *TaskInterface, Conf.TaskQSize) //初始化任务队列
 	for i := uint64(0); i < Conf.TaskAccN; i++ {
-		go func() { //后台任务处理goroutine
+		go func(goi uint64) { //后台任务处理goroutine
 			for !toStop { //如果检测到要停止了就停止
-				run1task()
+				run1task(goi)
 			}
-		}()
+		}(i)
+		util.Log("Daemon " + strconv.Itoa(int(i)) + " started")
 	}
 }
 

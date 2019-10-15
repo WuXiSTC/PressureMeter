@@ -3,7 +3,6 @@ package TaskList
 import (
 	"../Daemon"
 	"errors"
-	"unsafe"
 )
 
 //将一个任务加进任务队列
@@ -17,7 +16,7 @@ func (tasklist *taskList) Start(id string) error {
 		return nil
 	}
 	(*task).SetState(STATE_QUEUEING)
-	Daemon.AddTask((*Daemon.TaskInterface)(unsafe.Pointer(task)))
+	Daemon.AddTask(*task)
 	return nil
 }
 

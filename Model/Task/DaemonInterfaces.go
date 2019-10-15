@@ -7,12 +7,12 @@ import (
 )
 
 func (tsk *task) GetID() string {
-	return tsk.id
+	return *tsk.id
 }
 
 //用于Daemon的接口，开始任务执行
 func (tsk *task) Start() error {
-	f, err := os.OpenFile(tsk.logFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile(*tsk.logFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func (tsk *task) Start() error {
 		util.LogE(f.Close())
 		return err
 	}
-	tsk.state = TaskList.STATE_RUNNING
+	*tsk.state = TaskList.STATE_RUNNING
 	return nil
 }
 
@@ -34,9 +34,9 @@ func (tsk *task) Wait() error {
 	util.LogE(tsk.logfile.Close())
 	tsk.command.Stdout = nil
 	tsk.logfile = nil
-	tsk.command = Conf.getCommand(tsk.id) //进程完成后重开进程
-	tsk.state = TaskList.STATE_STOPPED
-	util.Log("task " + tsk.id + " stopped")
+	tsk.command = Conf.getCommand(*tsk.id) //进程完成后重开进程
+	*tsk.state = TaskList.STATE_STOPPED
+	util.Log("task " + *tsk.id + " stopped")
 	return nil
 }
 
@@ -44,7 +44,7 @@ func (tsk *task) Wait() error {
 //
 //先停止并删除进程再释放文件
 func (tsk *task) Stop() error {
-	if tsk.state == TaskList.STATE_STOPPED { //如果已经停止就直接成功
+	if *tsk.state == TaskList.STATE_STOPPED { //如果已经停止就直接成功
 		return nil
 	}
 	if tsk.command.Process != nil {

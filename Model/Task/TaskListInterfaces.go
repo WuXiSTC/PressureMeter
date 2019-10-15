@@ -13,25 +13,14 @@ import (
 )
 
 type task struct {
-	id             string    //任务的ID
-	configFilePath string    //设置文件的路径
-	resultFilePath string    //结果文件的路径
-	logFilePath    string    //日志文件的路径
+	id             *string   //任务的ID
+	configFilePath *string   //设置文件的路径
+	resultFilePath *string   //结果文件的路径
+	logFilePath    *string   //日志文件的路径
 	command        *exec.Cmd //要执行的指令
 	logfile        *os.File  //日志文件流
-	state          int       //运行状态
+	state          *int      //运行状态
 	stateLock      *sync.RWMutex
-}
-
-//创建一个新的空文件，或者清空文件
-func createFile(path string) error {
-	_ = os.Remove(path)
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm) //打开文件流
-	if err != nil {
-		return err
-	}
-	util.LogE(f.Close())
-	return nil
 }
 
 //新建Task，相当于Task的构造函数
@@ -56,31 +45,33 @@ var Constructor = func(id string, configFile multipart.File) (*task, error) {
 	}
 	util.Log(strconv.FormatInt(n, 10) + " byte jmx received, saved to " + configFilePath)
 
-	if err = createFile(resultFilePath); err != nil {
+	if err = util.EmptyFile(resultFilePath); err != nil {
 		return nil, err //创建结果文件
 	}
-	if err = createFile(logFilePath); err != nil {
+	if err = util.EmptyFile(logFilePath); err != nil {
 		return nil, err //创建日志文件
 	}
 
-	return &task{id, configFilePath, resultFilePath, logFilePath,
-		Conf.getCommand(id), nil, TaskList.STATE_STOPPED, new(sync.RWMutex)}, nil
+	tsk := &task{&id, &configFilePath, &resultFilePath, &logFilePath,
+		Conf.getCommand(id), nil, new(int), new(sync.RWMutex)}
+	*tsk.state = TaskList.STATE_STOPPED
+	return tsk, nil
 }
 
 //删除任务，顺带删除任务相关文件
 //
 //先停止任务，然后删除任务相关文件
 func (tsk *task) Delete() error {
-	if tsk.state != TaskList.STATE_STOPPED {
+	if *tsk.state != TaskList.STATE_STOPPED {
 		return errors.New("任务未停止，无法删除")
 	}
-	if err := os.Remove(tsk.configFilePath); err != nil { //删除之前的配置文件
+	if err := util.DeleteFile(*tsk.configFilePath); err != nil { //删除之前的配置文件
 		return err
 	}
-	if err := os.Remove(tsk.resultFilePath); err != nil { //删除之前的结果文件防止发生追加
+	if err := util.DeleteFile(*tsk.resultFilePath); err != nil { //删除之前的结果文件防止发生追加
 		return err
 	}
-	if err := os.Remove(tsk.logFilePath); err != nil { //删除之前的日志文件防止发生追加
+	if err := util.DeleteFile(*tsk.logFilePath); err != nil { //删除之前的日志文件防止发生追加
 		return err
 	}
 	return nil
@@ -89,11 +80,11 @@ func (tsk *task) Delete() error {
 func (tsk *task) GetState() int {
 	tsk.stateLock.RLock()
 	defer tsk.stateLock.RUnlock()
-	return tsk.state
+	return *tsk.state
 }
 
 func (tsk *task) SetState(state int) {
 	tsk.stateLock.Lock()
 	defer tsk.stateLock.Unlock()
-	tsk.state = state
+	tsk.state = &state
 }

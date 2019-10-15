@@ -54,9 +54,9 @@ func Init(Conf Config) {
 //将一个任务交给daemon运行
 //
 //入任务队列
-func AddTask(tsk *TaskInterface) {
-	taskQ <- tsk //入队列
-	Qn.more()    //队列中任务数量+1
+func AddTask(tsk TaskInterface) {
+	taskQ <- &tsk //入队列
+	Qn.more()     //队列中任务数量+1
 }
 
 //停止Daemon运行

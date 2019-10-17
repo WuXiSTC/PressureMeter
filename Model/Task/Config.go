@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 )
 
 type Config struct {
@@ -42,4 +43,8 @@ func (conf *Config) getCommand(id string) *exec.Cmd {
 	return exec.Command("jmeter", "--nongui",
 		"--testfile", conf.jmxPath(id),
 		"--logfile", conf.jtlPath(id))
+}
+
+func getStopCommand(port int) *exec.Cmd {
+	return exec.Command("shutdown.sh", strconv.Itoa(port))
 }

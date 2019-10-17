@@ -1,4 +1,5 @@
 FROM egaillardon/jmeter
+STOPSIGNAL SIGINT
 
 ADD PressureMeter /jmeter
 ADD Config.yaml /jmeter

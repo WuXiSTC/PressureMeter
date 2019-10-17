@@ -3,7 +3,13 @@ package Task
 import (
 	"../../util"
 	"../TaskList"
+	"bufio"
+	"errors"
+	"fmt"
 	"os"
+	"regexp"
+	"strconv"
+	"syscall"
 )
 
 func (tsk *task) GetID() string {
@@ -22,6 +28,7 @@ func (tsk *task) Start() error {
 		util.LogE(f.Close())
 		return err
 	}
+	util.Log(fmt.Sprintf("Task %d started in PID %d", tsk.id, tsk.command.Process.Pid))
 	tsk.SetState(TaskList.STATE_RUNNING)
 	return nil
 }
@@ -45,9 +52,49 @@ func (tsk *task) Stop() error {
 		return nil
 	}
 	if tsk.command.Process != nil {
-		if err := tsk.command.Process.Kill(); err != nil { //停止就是向进程发送kill命令
+		if err := tsk.sendStopMsg(); err == nil {
+			return nil
+		}
+		if err := tsk.command.Process.Signal(syscall.SIGTERM); err != nil { //停止就是向进程发送kill命令
 			return err
 		}
 	}
 	return nil
+}
+
+//向任务停止监听端口发送停止信号
+func (tsk *task) sendStopMsg() error {
+	port, err := tsk.getStopPort()
+	if err != nil {
+		return err
+	}
+	stopCommand := getStopCommand(port)
+	return stopCommand.Start()
+}
+
+//获取停止信号的监听端口，以读log的形式搞的，肥肠暴力
+func (tsk *task) getStopPort() (int, error) {
+	logPath := tsk.GetLogFilePath()
+	f, err := os.OpenFile(logPath, os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		return 0, err
+	}
+	defer func() { util.LogE(f.Close()) }()
+
+	re, _ := regexp.Compile("Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port (.*)$")
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanLines)
+	for i := 0; i < 10 && scanner.Scan(); i++ {
+		s := re.FindSubmatch([]byte(scanner.Text()))
+		if len(s) >= 2 {
+			portStr := string(s[1])
+			port, err := strconv.Atoi(portStr)
+			if err != nil {
+				util.Log(fmt.Sprintf("Fail to detect port: %s", portStr))
+				return 0, err
+			}
+			return port, nil
+		}
+	}
+	return 0, errors.New("找不到端口记录")
 }

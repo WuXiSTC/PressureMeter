@@ -2,6 +2,7 @@ package Daemon
 
 import (
 	"../../util"
+	"fmt"
 	"strconv"
 	"sync"
 )
@@ -37,9 +38,9 @@ func run1task(i uint64) {
 		return
 	}
 	if err := (*tsk).Start(); err == nil { //否则就运行
-		util.Log("Daemon " + strconv.Itoa(int(i)) + ": started " + (*tsk).GetID())
+		util.Log(fmt.Sprintf("Daemon %d: started task %s", i, (*tsk).GetID()))
 		util.LogE((*tsk).Wait())
-		util.Log("Daemon " + strconv.Itoa(int(i)) + ": stopped " + (*tsk).GetID())
+		util.Log(fmt.Sprintf("Daemon %d: stopped task %s", i, (*tsk).GetID()))
 	} else { //运行出错则停止
 		util.LogE(err)
 	}

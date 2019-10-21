@@ -30,3 +30,14 @@ func StopTask(ctx iris.Context) {
 	}
 	responseMsg(ctx, iris.Map{"ok": true, "message": "停止成功"})
 }
+
+func GetState(ctx iris.Context) {
+	taskId := ctx.Params().Get("id")
+	info, exists := Model.TaskList.GetInfo(taskId)
+	if !exists {
+		ctx.StatusCode(iris.StatusNotFound)
+		return
+	}
+	state := (*info).GetStateCode()
+	responseMsg(ctx, iris.Map{"ok": true, "message": Model.StateList[state], "stateCode": state})
+}

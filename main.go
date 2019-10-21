@@ -27,7 +27,7 @@ func main() {
 	app.Get("/Task/getLog/{id:path}", Controller.GetLog)
 	app.Get("/Task/start/{id:path}", Controller.StartTask)
 	app.Get("/Task/stop/{id:path}", Controller.StopTask)
-	//app.Get("/Task/getState/{id:path}", Controller.GetState)
+	app.Get("/Task/getState/{id:path}", Controller.GetState)
 
 	err := app.Run(iris.Addr(":8080"))
 	util.LogE(err)

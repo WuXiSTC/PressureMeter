@@ -21,6 +21,11 @@ var TaskList = tasklist.TaskList
 
 var Task = task.Constructor
 
+var StateList = map[int]string{
+	tasklist.STATE_STOPPED:  "Stopped",
+	tasklist.STATE_QUEUEING: "Queueing",
+	tasklist.STATE_RUNNING:  "Running"}
+
 //Model层组件初始化
 func Init(configPath string) {
 	util.GetConf(configPath, &Conf)

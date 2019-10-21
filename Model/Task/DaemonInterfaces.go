@@ -58,6 +58,8 @@ func (tsk *task) Stop() error {
 		if err := tsk.command.Process.Signal(syscall.SIGTERM); err != nil { //停止就是向进程发送kill命令
 			return err
 		}
+	} else {
+		tsk.SetState(TaskList.STATE_STOPPED)
 	}
 	return nil
 }

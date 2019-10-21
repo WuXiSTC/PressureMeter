@@ -18,7 +18,6 @@ type TaskInfo interface {
 type TaskInterface interface {
 	Daemon.TaskInterface
 	TaskInfo
-	Stop() error
 	Delete() error
 	GetState() int
 	SetState(int)

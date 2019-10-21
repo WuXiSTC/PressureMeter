@@ -12,6 +12,7 @@ type TaskInterface interface {
 	GetID() string //获取任务ID
 	Start() error  //启动
 	Wait() error   //等待
+	Stop() error   //停止
 }
 
 //设置类型
@@ -42,6 +43,8 @@ func run1task(i uint64) {
 		util.LogE((*tsk).Wait())
 		util.Log(fmt.Sprintf("Daemon %d: stopped task %s", i, (*tsk).GetID()))
 	} else { //运行出错则停止
+		util.LogE(err)
+		err = (*tsk).Stop()
 		util.LogE(err)
 	}
 }

@@ -10,9 +10,8 @@ import (
 //返回启动是否成功和错误信息
 func StartTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
-	err := Model.TaskList.Start(taskId)
-	if err != nil {
-		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
+	if exists := Model.TaskList.Start(taskId); !exists {
+		ctx.StatusCode(iris.StatusNotFound)
 		return
 	}
 	responseMsg(ctx, iris.Map{"ok": true, "message": "启动成功"})
@@ -23,21 +22,24 @@ func StartTask(ctx iris.Context) {
 //返回停止是否成功和错误信息
 func StopTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
-	err := Model.TaskList.Stop(taskId)
-	if err != nil {
+	if exists, err := Model.TaskList.Stop(taskId); !exists {
+		ctx.StatusCode(iris.StatusNotFound)
+		return
+	} else if err != nil {
 		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 		return
+	} else {
+		responseMsg(ctx, iris.Map{"ok": true, "message": "停止成功"})
 	}
-	responseMsg(ctx, iris.Map{"ok": true, "message": "停止成功"})
 }
 
 func GetState(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
-	info, exists := Model.TaskList.GetInfo(taskId)
-	if !exists {
+	if info, exists := Model.TaskList.GetInfo(taskId); !exists {
 		ctx.StatusCode(iris.StatusNotFound)
 		return
+	} else {
+		state := (*info).GetStateCode()
+		responseMsg(ctx, iris.Map{"ok": true, "message": Model.StateList[state], "stateCode": state})
 	}
-	state := (*info).GetStateCode()
-	responseMsg(ctx, iris.Map{"ok": true, "message": Model.StateList[state], "stateCode": state})
 }

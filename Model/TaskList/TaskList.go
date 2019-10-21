@@ -35,15 +35,17 @@ func (tasklist *taskList) GetInfo(id string) (*TaskInfo, bool) {
 }
 
 //按照ID删除任务
-func (tasklist *taskList) DelTask(id string) error {
+//
+//返回任务是否存在和错误信息
+func (tasklist *taskList) DelTask(id string) (bool, error) {
 	tsk, exists := tasklist.tasks[id]
 	if exists {
 		if err := (*tsk).Delete(); err != nil {
-			return err
+			return exists, err
 		}
 		delete(tasklist.tasks, id)
 	}
-	return nil
+	return exists, nil
 }
 
 func (tasklist *taskList) Exists(id string) bool {

@@ -40,6 +40,6 @@ func GetState(ctx iris.Context) {
 		return
 	} else {
 		state := (*info).GetStateCode()
-		responseMsg(ctx, iris.Map{"ok": true, "message": Model.StateList[state], "stateCode": state})
+		responseMsg(ctx, iris.Map{"message": Model.StateList[state], "stateCode": state})
 	}
 }

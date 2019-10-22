@@ -25,6 +25,8 @@ func (tasklist *taskList) AddTask(tsk TaskInterface) error {
 }
 
 //按照ID获取任务
+//
+//返回任务信息获取接口和是否存在
 func (tasklist *taskList) GetInfo(id string) (*TaskInfo, bool) {
 	tsk, exists := tasklist.tasks[id]
 	if tsk != nil {

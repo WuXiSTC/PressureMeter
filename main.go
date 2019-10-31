@@ -28,6 +28,7 @@ func main() {
 	app.Get("/Task/start/{id:path}", Controller.StartTask)
 	app.Get("/Task/stop/{id:path}", Controller.StopTask)
 	app.Get("/Task/getState/{id:path}", Controller.GetState)
+	app.HandleDir("/", "./static")
 
 	err := app.Run(iris.Addr(":8080"))
 	util.LogE(err)

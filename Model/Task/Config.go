@@ -40,9 +40,12 @@ func (conf *Config) logPath(id string) string {
 
 //通过id获取要执行的指令
 func (conf *Config) getCommand(id string) *exec.Cmd {
-	return exec.Command("jmeter", "--nongui",
-		"--testfile", conf.jmxPath(id),
-		"--logfile", conf.jtlPath(id))
+	return exec.Command("ping", "192.168.2.77", "-n", "10")
+	/*
+		return exec.Command("jmeter", "--nongui",
+			"--testfile", conf.jmxPath(id),
+			"--logfile", conf.jtlPath(id))
+	*/
 }
 
 func getStopCommand(port int) *exec.Cmd {

@@ -32,17 +32,9 @@
 
 ## Installation
 
-### 编译（可选）
+### 编译打包
 
-由于系统打包使用到了`egaillardon/jmeter`镜像，此镜像基于`alpine`，因此需要通过`alpine`平台进行编译：
-
-```shell
-docker run -it --rm -v "$(pwd):/app" yindaheng98/go-iris go build -v -o /app/PressureMeter
-```
-
-### 打包
-
-在工程目录下已有一个用于打包的Dockerfile文件，可以在工程目录通过以下命令直接进行打包：
+由于系统打包使用到了`egaillardon/jmeter`镜像，此镜像基于`alpine`，因此需要通过`alpine`平台进行编译。在工程目录下有一个用于打包的Dockerfile文件，可以在工程目录通过以下命令直接进行打包：
 
 ```shell
 docker build -t pressure_meter .

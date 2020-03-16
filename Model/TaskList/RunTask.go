@@ -1,7 +1,7 @@
 package TaskList
 
 import (
-	"../Daemon"
+	"PressureMeter/Model/Daemon"
 )
 
 //将一个任务加进任务队列

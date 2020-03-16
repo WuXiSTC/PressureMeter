@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./Controller"
-	"./Model"
-	"./util"
+	"PressureMeter/Controller"
+	"PressureMeter/Model"
+	"PressureMeter/util"
 	"context"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"

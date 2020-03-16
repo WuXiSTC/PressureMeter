@@ -1,8 +1,8 @@
 package Task
 
 import (
-	"../../util"
-	"../TaskList"
+	"PressureMeter/Model/TaskList"
+	"PressureMeter/util"
 	"errors"
 	"io"
 	"mime/multipart"

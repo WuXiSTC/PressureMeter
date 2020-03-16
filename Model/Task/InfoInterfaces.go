@@ -1,7 +1,7 @@
 package Task
 
 import (
-	"../../util"
+	"PressureMeter/util"
 	"os"
 )
 

@@ -1,6 +1,6 @@
 package Controller
 
-import "../Model"
+import "PressureMeter/Model"
 
 func Shutdown() error {
 	if err := Model.TaskList.StopAll(); err != nil {

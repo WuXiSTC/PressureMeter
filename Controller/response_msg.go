@@ -1,7 +1,7 @@
 package Controller
 
 import (
-	"../util"
+	"PressureMeter/util"
 	"github.com/kataras/iris"
 )
 

@@ -1,7 +1,12 @@
+FROM golang:alpine
+WORKDIR /go/src/app
+COPY . .
+RUN go get -d -v ./... && go build -v -o /PressureMeter
+
 FROM egaillardon/jmeter
 STOPSIGNAL SIGINT
 
-ADD PressureMeter /jmeter
+COPY --from=0 /PressureMeter /jmeter
 ADD Config.yaml /jmeter
 
 EXPOSE 8080

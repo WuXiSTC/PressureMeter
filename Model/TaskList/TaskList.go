@@ -1,8 +1,8 @@
 package TaskList
 
 import (
-	"../../util"
-	"../Daemon"
+	"PressureMeter/Model/Daemon"
+	"PressureMeter/util"
 	"errors"
 )
 

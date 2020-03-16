@@ -1,9 +1,9 @@
 package Controller
 
 import (
-	"../Model"
-	"../Model/TaskList"
-	"../util"
+	"PressureMeter/Model"
+	"PressureMeter/Model/TaskList"
+	"PressureMeter/util"
 	"github.com/kataras/iris"
 )
 

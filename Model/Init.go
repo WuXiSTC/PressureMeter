@@ -1,10 +1,10 @@
 package Model
 
 import (
-	"../util"
-	"./Daemon"
-	task "./Task"
-	tasklist "./TaskList"
+	"PressureMeter/Model/Daemon"
+	task "PressureMeter/Model/Task"
+	tasklist "PressureMeter/Model/TaskList"
+	"PressureMeter/util"
 	"errors"
 	"mime/multipart"
 )

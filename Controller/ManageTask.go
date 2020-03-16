@@ -1,8 +1,8 @@
 package Controller
 
 import (
-	"../Model"
-	"../util"
+	"PressureMeter/Model"
+	"PressureMeter/util"
 	"github.com/kataras/iris"
 )
 
@@ -12,7 +12,6 @@ func NewTask(ctx iris.Context) {
 	if err != nil {
 		util.LogE(err)
 		responseMsg(ctx, iris.Map{"ok": false, "message": "请在Post的jmx字段上传您的jmx文件"})
-		_ = file.Close()
 		return
 	}
 	defer func() {

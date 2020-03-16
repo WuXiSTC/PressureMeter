@@ -1,7 +1,7 @@
 package Daemon
 
 import (
-	"../../util"
+	"PressureMeter/util"
 	"fmt"
 	"strconv"
 	"sync"

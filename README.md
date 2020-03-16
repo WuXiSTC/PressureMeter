@@ -48,6 +48,25 @@ docker build -t pressure_meter .
 docker run --rm -v "$(pwd)/Data:/jmeter/Data" -p 8080:8080 pressure_meter
 ```
 
+### (Optional)设置
+
+程序通过命令行进行设置。运行`[编译完成的可执行程序] -h`可以查看命令行帮助：
+
+```sh
+$ ./PressureMeter -h
+Usage of PressureMeter:
+  -JmxDir string
+        存放jmx文件的目录位置 (default "Data/jmx")
+  -JtlDir string
+        存放jtl结果文件的目录位置 (default "Data/jtl")
+  -LogDir string
+        存放日志文件的目录位置 (default "Data/log")
+  -TaskAccN uint
+        以同时进行的任务数量 (default 4)
+  -TaskQSize uint
+        任务队列缓冲区大小 (default 1000)
+```
+
 ## Instructions
 
 ### 原理简述

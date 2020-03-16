@@ -7,7 +7,6 @@ FROM egaillardon/jmeter
 STOPSIGNAL SIGINT
 
 COPY --from=0 /PressureMeter /jmeter
-ADD Config.yaml /jmeter
 
 EXPOSE 8080
 WORKDIR /jmeter

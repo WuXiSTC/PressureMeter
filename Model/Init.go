@@ -4,22 +4,12 @@ import (
 	"PressureMeter/Model/Daemon"
 	task "PressureMeter/Model/Task"
 	tasklist "PressureMeter/Model/TaskList"
-	"PressureMeter/util"
 	"errors"
+	"flag"
 	"mime/multipart"
 )
 
-type Config struct {
-	DaemonConf Daemon.Config `yaml:",inline"`
-	TaskConf   task.Config   `yaml:",inline"`
-}
-
-var Conf = Config{Daemon.Config{TaskQSize: 1000, TaskAccN: 4},
-	task.Config{JmxDir: "Data/jmx", JtlDir: "Data/jtl", LogDir: "Data/log"}}
-
 var TaskList = tasklist.TaskList
-
-var Task = task.Constructor
 
 var StateList = map[int]string{
 	tasklist.STATE_STOPPED:  "Stopped",
@@ -27,10 +17,10 @@ var StateList = map[int]string{
 	tasklist.STATE_RUNNING:  "Running"}
 
 //Model层组件初始化
-func Init(configPath string) {
-	util.GetConf(configPath, &Conf)
-	Daemon.Init(Conf.DaemonConf)
-	task.Init(Conf.TaskConf)
+func Init() {
+	flag.Parse()
+	Daemon.Init()
+	task.Init()
 }
 
 //新建并添加一个新Task

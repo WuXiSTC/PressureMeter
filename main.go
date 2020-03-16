@@ -12,7 +12,7 @@ import (
 //main 主函数
 func main() {
 	app := iris.New()
-	Model.Init("Config.yaml")
+	Model.Init()
 	iris.RegisterOnInterrupt(func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 0)
 		defer cancel()

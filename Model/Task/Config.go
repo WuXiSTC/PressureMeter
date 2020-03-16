@@ -2,6 +2,7 @@ package Task
 
 import (
 	"PressureMeter/util"
+	"flag"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,10 +15,19 @@ type Config struct {
 	LogDir string `yaml:"logDir"` //存放日志文件的目录位置
 }
 
-var Conf = Config{"Data/jmx", "Data/jtl", "Data/log"}
+var Conf Config
 
-func Init(conf Config) {
-	Conf = conf
+var JmxDir = flag.String("JmxDir", "Data/jmx", "存放jmx文件的目录位置")
+var JtlDir = flag.String("JtlDir", "Data/jtl", "存放jtl结果文件的目录位置")
+var LogDir = flag.String("LogDir", "Data/log", "存放日志文件的目录位置")
+
+func Init() {
+	Conf.JmxDir = *JmxDir
+	Conf.JtlDir = *JtlDir
+	Conf.LogDir = *LogDir
+	util.Log(".jmx file will be located in " + Conf.JmxDir)
+	util.Log(".jtl file will be located in " + Conf.JtlDir)
+	util.Log(".log file will be located in " + Conf.LogDir)
 }
 
 //通过id获取jmx文件路径

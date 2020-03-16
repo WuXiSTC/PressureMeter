@@ -2,6 +2,7 @@ package Daemon
 
 import (
 	"PressureMeter/util"
+	"flag"
 	"fmt"
 	"strconv"
 	"sync"
@@ -52,9 +53,15 @@ func run1task(i uint64) {
 var toStop = false
 var stopped = make(chan uint64)
 
+var TaskAccN = flag.Uint64("TaskAccN", 4, "以同时进行的任务数量")
+var TaskQSize = flag.Uint64("TaskQSize", 1000, "任务队列缓冲区大小")
+
 //按照配置文件创建任务队列和执行任务的后台goroutine
-func Init(Conf Config) {
-	conf = Conf
+func Init() {
+	conf.TaskAccN = *TaskAccN
+	conf.TaskQSize = *TaskQSize
+	util.Log(fmt.Sprintf("%d tasks can running simultaneously at most", conf.TaskAccN))
+	util.Log(fmt.Sprintf("Task buffer size: %d", conf.TaskQSize))
 	taskQ = make(chan *TaskInterface, conf.TaskQSize) //初始化任务队列
 	for i := uint64(0); i < conf.TaskAccN; i++ {
 		go func(goi uint64) { //后台任务处理goroutine

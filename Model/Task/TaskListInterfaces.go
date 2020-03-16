@@ -1,9 +1,9 @@
 package Task
 
 import (
-	"PressureMeter/Model/TaskList"
-	"PressureMeter/util"
 	"errors"
+	"gitee.com/WuXiSTC/PressureMeter/Model/TaskList"
+	"gitee.com/WuXiSTC/PressureMeter/util"
 	"io"
 	"mime/multipart"
 	"os"

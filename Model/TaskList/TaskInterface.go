@@ -1,6 +1,6 @@
 package TaskList
 
-import "PressureMeter/Model/Daemon"
+import "gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
 
 const ( //Task的三种状态
 	STATE_STOPPED  = iota //停止

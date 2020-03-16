@@ -1,4 +1,4 @@
-module PressureMeter
+module gitee.com/WuXiSTC/PressureMeter
 
 go 1.13
 

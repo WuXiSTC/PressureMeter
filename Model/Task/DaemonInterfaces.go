@@ -1,11 +1,11 @@
 package Task
 
 import (
-	"PressureMeter/Model/TaskList"
-	"PressureMeter/util"
 	"bufio"
 	"errors"
 	"fmt"
+	"gitee.com/WuXiSTC/PressureMeter/Model/TaskList"
+	"gitee.com/WuXiSTC/PressureMeter/util"
 	"os"
 	"regexp"
 	"strconv"

@@ -1,6 +1,6 @@
 package Controller
 
-import "PressureMeter/Model"
+import "gitee.com/WuXiSTC/PressureMeter/Model"
 
 func Shutdown() error {
 	if err := Model.TaskList.StopAll(); err != nil {

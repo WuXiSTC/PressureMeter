@@ -1,8 +1,8 @@
 package Controller
 
 import (
-	"PressureMeter/Model"
-	"PressureMeter/util"
+	"gitee.com/WuXiSTC/PressureMeter/Model"
+	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/kataras/iris"
 )
 

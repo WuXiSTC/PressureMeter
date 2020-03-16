@@ -1,10 +1,10 @@
 package PressureMeter
 
 import (
-	"PressureMeter/Controller"
-	"PressureMeter/Model"
-	"PressureMeter/util"
 	"context"
+	"gitee.com/WuXiSTC/PressureMeter/Controller"
+	"gitee.com/WuXiSTC/PressureMeter/Model"
+	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"strings"

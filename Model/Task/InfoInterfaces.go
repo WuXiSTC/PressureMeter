@@ -1,7 +1,7 @@
 package Task
 
 import (
-	"PressureMeter/util"
+	"gitee.com/WuXiSTC/PressureMeter/util"
 	"os"
 )
 

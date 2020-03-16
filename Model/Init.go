@@ -1,11 +1,11 @@
 package Model
 
 import (
-	"PressureMeter/Model/Daemon"
-	task "PressureMeter/Model/Task"
-	tasklist "PressureMeter/Model/TaskList"
 	"errors"
 	"flag"
+	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
+	task "gitee.com/WuXiSTC/PressureMeter/Model/Task"
+	tasklist "gitee.com/WuXiSTC/PressureMeter/Model/TaskList"
 	"mime/multipart"
 )
 

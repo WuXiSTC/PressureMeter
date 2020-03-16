@@ -1,9 +1,9 @@
 package TaskList
 
 import (
-	"PressureMeter/Model/Daemon"
-	"PressureMeter/util"
 	"errors"
+	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
+	"gitee.com/WuXiSTC/PressureMeter/util"
 )
 
 type taskList struct {

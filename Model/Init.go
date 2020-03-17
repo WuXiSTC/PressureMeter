@@ -2,7 +2,6 @@ package Model
 
 import (
 	"errors"
-	"flag"
 	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
 	task "gitee.com/WuXiSTC/PressureMeter/Model/Task"
 	tasklist "gitee.com/WuXiSTC/PressureMeter/Model/TaskList"
@@ -16,11 +15,22 @@ var StateList = map[int]string{
 	tasklist.STATE_QUEUEING: "Queueing",
 	tasklist.STATE_RUNNING:  "Running"}
 
+type Config struct {
+	DaemonConfig Daemon.Config
+	TaskConfig   task.Config
+}
+
+func DefaultConfig() Config {
+	return Config{
+		DaemonConfig: Daemon.DefaultConfig(),
+		TaskConfig:   task.DefaultConfig(),
+	}
+}
+
 //Model层组件初始化
-func Init() {
-	flag.Parse()
-	Daemon.Init()
-	task.Init()
+func Init(c Config) {
+	Daemon.Init(c.DaemonConfig)
+	task.Init(c.TaskConfig)
 }
 
 //新建并添加一个新Task

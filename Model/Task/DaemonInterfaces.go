@@ -39,7 +39,7 @@ func (tsk *task) Wait() error {
 	util.LogE(tsk.logfile.Close())
 	tsk.command.Stdout = nil
 	tsk.logfile = nil
-	tsk.command = Conf.getCommand(*tsk.id) //进程完成后重开进程
+	tsk.command = conf.getCommand(*tsk.id) //进程完成后重开进程
 	tsk.SetState(TaskList.STATE_STOPPED)
 	return nil
 }

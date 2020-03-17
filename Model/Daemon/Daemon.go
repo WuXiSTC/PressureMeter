@@ -1,7 +1,6 @@
 package Daemon
 
 import (
-	"flag"
 	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"strconv"
@@ -16,13 +15,6 @@ type TaskInterface interface {
 	Stop() error   //停止
 }
 
-//设置类型
-type Config struct {
-	TaskAccN  uint64 `yaml:"TaskAccN"`
-	TaskQSize uint64 `yaml:"TaskQSize"`
-}
-
-var conf Config                       //配置信息
 var taskQ chan *TaskInterface         //任务队列，用以存储要执行的任务的地址
 var Qn = &count{0, new(sync.RWMutex)} //任务队列当前长度
 
@@ -52,27 +44,6 @@ func run1task(i uint64) {
 
 var toStop = false
 var stopped = make(chan uint64)
-
-var TaskAccN = flag.Uint64("TaskAccN", 4, "以同时进行的任务数量")
-var TaskQSize = flag.Uint64("TaskQSize", 1000, "任务队列缓冲区大小")
-
-//按照配置文件创建任务队列和执行任务的后台goroutine
-func Init() {
-	conf.TaskAccN = *TaskAccN
-	conf.TaskQSize = *TaskQSize
-	util.Log(fmt.Sprintf("%d tasks can running simultaneously at most", conf.TaskAccN))
-	util.Log(fmt.Sprintf("Task buffer size: %d", conf.TaskQSize))
-	taskQ = make(chan *TaskInterface, conf.TaskQSize) //初始化任务队列
-	for i := uint64(0); i < conf.TaskAccN; i++ {
-		go func(goi uint64) { //后台任务处理goroutine
-			for !toStop { //如果检测到要停止了就停止
-				run1task(goi)
-			}
-			stopped <- goi
-		}(i)
-		util.Log("Daemon " + strconv.Itoa(int(i)) + " started")
-	}
-}
 
 //将一个任务交给daemon运行
 //

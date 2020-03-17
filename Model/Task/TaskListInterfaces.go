@@ -27,9 +27,9 @@ type task struct {
 //
 //输入值是任务ID和配置文件流，返回新建的任务指针和错误信息
 var Constructor = func(id string, configFile multipart.File) (*task, error) {
-	configFilePath := Conf.jmxPath(id) //文件名是任务的id
-	resultFilePath := Conf.jtlPath(id) //文件名是任务的id
-	logFilePath := Conf.logPath(id)    //文件名是任务的id
+	configFilePath := conf.jmxPath(id) //文件名是任务的id
+	resultFilePath := conf.jtlPath(id) //文件名是任务的id
+	logFilePath := conf.logPath(id)    //文件名是任务的id
 
 	jmx, err := os.OpenFile(configFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm) //打开文件流
 	if err != nil {
@@ -53,7 +53,7 @@ var Constructor = func(id string, configFile multipart.File) (*task, error) {
 	}
 
 	tsk := &task{&id, &configFilePath, &resultFilePath, &logFilePath,
-		Conf.getCommand(id), nil, new(int), new(sync.RWMutex)}
+		conf.getCommand(id), nil, new(int), new(sync.RWMutex)}
 	tsk.SetState(TaskList.STATE_STOPPED)
 	return tsk, nil
 }

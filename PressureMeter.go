@@ -11,12 +11,14 @@ import (
 )
 
 type Config struct {
+	ModelConfig  Model.Config
 	URLConfig    URLConfig
 	LoggerConfig *util.LoggerConfig
 }
 
 func DefaultConfig() Config {
 	return Config{
+		ModelConfig: Model.DefaultConfig(),
 		URLConfig: URLConfig{
 			NewTask:    []string{"Task", "new"},
 			DeleteTask: []string{"Task", "delete"},
@@ -50,7 +52,7 @@ func Init(ctx context.Context, conf Config) (app *iris.Application) {
 	if conf.LoggerConfig != nil {
 		util.SetLogger(*conf.LoggerConfig)
 	}
-	Model.Init()
+	Model.Init(conf.ModelConfig)
 
 	app = iris.New()
 	app.Use(logger.New())

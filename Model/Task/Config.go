@@ -1,7 +1,6 @@
 package Task
 
 import (
-	"flag"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"os"
 	"os/exec"
@@ -15,36 +14,35 @@ type Config struct {
 	LogDir string `yaml:"logDir"` //存放日志文件的目录位置
 }
 
-var Conf Config
+var conf Config
 
-var JmxDir = flag.String("JmxDir", "Data/jmx", "存放jmx文件的目录位置")
-var JtlDir = flag.String("JtlDir", "Data/jtl", "存放jtl结果文件的目录位置")
-var LogDir = flag.String("LogDir", "Data/log", "存放日志文件的目录位置")
+func DefaultConfig() Config {
+	return Config{
+		JmxDir: "Data/jmx",
+		JtlDir: "Data/jtl",
+		LogDir: "Data/log",
+	}
+}
 
-func Init() {
-	Conf.JmxDir = *JmxDir
-	Conf.JtlDir = *JtlDir
-	Conf.LogDir = *LogDir
-	util.Log(".jmx file will be located in " + Conf.JmxDir)
-	util.Log(".jtl file will be located in " + Conf.JtlDir)
-	util.Log(".log file will be located in " + Conf.LogDir)
+func Init(c Config) {
+	conf = c
 }
 
 //通过id获取jmx文件路径
 func (conf *Config) jmxPath(id string) string {
-	util.LogE(os.MkdirAll(Conf.JmxDir, os.ModePerm)) //没有目录先建目录
+	util.LogE(os.MkdirAll(conf.JmxDir, os.ModePerm)) //没有目录先建目录
 	return filepath.Join(conf.JmxDir, id) + ".jmx"   //文件名是任务的id
 }
 
 //通过id获取jtl文件路径
 func (conf *Config) jtlPath(id string) string {
-	util.LogE(os.MkdirAll(Conf.JtlDir, os.ModePerm)) //没有目录先建目录
+	util.LogE(os.MkdirAll(conf.JtlDir, os.ModePerm)) //没有目录先建目录
 	return filepath.Join(conf.JtlDir, id) + ".jtl"   //文件名是任务的id
 }
 
 //通过id获取log文件路径
 func (conf *Config) logPath(id string) string {
-	util.LogE(os.MkdirAll(Conf.LogDir, os.ModePerm)) //没有目录先建目录
+	util.LogE(os.MkdirAll(conf.LogDir, os.ModePerm)) //没有目录先建目录
 	return filepath.Join(conf.LogDir, id) + ".log"   //文件名是任务的id
 }
 

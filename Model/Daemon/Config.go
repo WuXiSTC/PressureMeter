@@ -8,8 +8,8 @@ import (
 
 //设置类型
 type Config struct {
-	TaskAccN  uint64 //以同时进行的任务数量
-	TaskQSize uint64 //任务队列缓冲区大小
+	TaskAccN  uint64 `yaml:"TaskAccN" usage:"以同时进行的任务数量"`
+	TaskQSize uint64 `yaml:"TaskQSize" usage:"任务队列缓冲区大小"`
 }
 
 var conf Config //配置信息

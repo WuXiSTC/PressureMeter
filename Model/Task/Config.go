@@ -9,9 +9,9 @@ import (
 )
 
 type Config struct {
-	JmxDir string `yaml:"JmxDir"` //存放jmx文件的目录位置
-	JtlDir string `yaml:"JtlDir"` //存放jtl结果文件的目录位置
-	LogDir string `yaml:"logDir"` //存放日志文件的目录位置
+	JmxDir string `yaml:"JmxDir" usage:"存放jmx文件的目录位置"`
+	JtlDir string `yaml:"JtlDir" usage:"存放jtl结果文件的目录位置"`
+	LogDir string `yaml:"logDir" usage:"存放日志文件的目录位置"`
 }
 
 var conf Config

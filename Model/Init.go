@@ -16,8 +16,8 @@ var StateList = map[int]string{
 	tasklist.STATE_RUNNING:  "Running"}
 
 type Config struct {
-	DaemonConfig Daemon.Config
-	TaskConfig   task.Config
+	DaemonConfig Daemon.Config `yaml:"DaemonConfig" usage:"Configuration of PressureMater Daemon."`
+	TaskConfig   task.Config   `yaml:"TaskConfig" usage:"Configuration of PressureMater Task."`
 }
 
 func DefaultConfig() Config {

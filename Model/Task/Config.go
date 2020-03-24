@@ -61,7 +61,7 @@ func (conf *Config) getCommand(id string) *exec.Cmd {
 		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),
 			"--logfile", conf.jtlPath(id),
-			"-R", strings.Join(IPList, ","))
+			"--remotestart", strings.Join(IPList, ","))
 	} else {
 		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),

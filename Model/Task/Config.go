@@ -2,6 +2,7 @@ package Task
 
 import (
 	"gitee.com/WuXiSTC/PressureMeter/util"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,7 +16,7 @@ type Config struct {
 	LogDir string `yaml:"logDir" usage:"存放日志文件的目录位置"`
 
 	//用于设置Jmeter分布式测试指令中输入的从机IP列表
-	IpList *[]string `yaml:"-"`
+	IPList *[]net.TCPAddr `yaml:"-"`
 }
 
 var conf Config
@@ -52,11 +53,15 @@ func (conf *Config) logPath(id string) string {
 
 //通过id获取要执行的指令
 func (conf *Config) getCommand(id string) *exec.Cmd {
-	if conf.IpList != nil && len(*conf.IpList) > 0 {
+	if conf.IPList != nil && len(*conf.IPList) > 0 {
+		IPList := make([]string, len(*conf.IPList))
+		for i, Addr := range *conf.IPList {
+			IPList[i] = Addr.String()
+		}
 		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),
 			"--logfile", conf.jtlPath(id),
-			"-R", strings.Join(*conf.IpList, ","))
+			"-R", strings.Join(IPList, ","))
 	} else {
 		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),

@@ -53,7 +53,7 @@ var Constructor = func(id string, configFile multipart.File) (*task, error) {
 	}
 
 	tsk := &task{&id, &configFilePath, &resultFilePath, &logFilePath,
-		conf.getCommand(id), nil, new(int), new(sync.RWMutex)}
+		nil, nil, new(int), new(sync.RWMutex)}
 	tsk.SetState(TaskList.STATE_STOPPED)
 	return tsk, nil
 }

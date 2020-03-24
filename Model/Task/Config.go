@@ -6,12 +6,16 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 type Config struct {
 	JmxDir string `yaml:"JmxDir" usage:"存放jmx文件的目录位置"`
 	JtlDir string `yaml:"JtlDir" usage:"存放jtl结果文件的目录位置"`
 	LogDir string `yaml:"logDir" usage:"存放日志文件的目录位置"`
+
+	//用于设置Jmeter分布式测试指令中输入的从机IP列表
+	IpList *[]string `yaml:"-"`
 }
 
 var conf Config
@@ -48,12 +52,16 @@ func (conf *Config) logPath(id string) string {
 
 //通过id获取要执行的指令
 func (conf *Config) getCommand(id string) *exec.Cmd {
-	return exec.Command("jmeter", "--nongui",
-		"--testfile", conf.jmxPath(id),
-		"--logfile", conf.jtlPath(id))
-	/*
-		return exec.Command("ping", "192.168.2.77", "-n", "10")
-	*/
+	if conf.IpList != nil && len(*conf.IpList) > 0 {
+		return exec.Command("jmeter", "--nongui",
+			"--testfile", conf.jmxPath(id),
+			"--logfile", conf.jtlPath(id),
+			"-R", strings.Join(*conf.IpList, ","))
+	} else {
+		return exec.Command("jmeter", "--nongui",
+			"--testfile", conf.jmxPath(id),
+			"--logfile", conf.jtlPath(id))
+	}
 }
 
 func getStopCommand(port int) *exec.Cmd {

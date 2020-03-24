@@ -23,6 +23,9 @@ func (tsk *task) Start() error {
 		return err
 	}
 	tsk.logfile = f
+	if tsk.command == nil {
+		tsk.command = conf.getCommand(*tsk.id)
+	}
 	tsk.command.Stdout = f
 	if err := tsk.command.Start(); err != nil {
 		util.LogE(f.Close())
@@ -39,7 +42,7 @@ func (tsk *task) Wait() error {
 	util.LogE(tsk.logfile.Close())
 	tsk.command.Stdout = nil
 	tsk.logfile = nil
-	tsk.command = conf.getCommand(*tsk.id) //进程完成后重开进程
+	tsk.command = nil //进程完成后清除进程
 	tsk.SetState(TaskList.STATE_STOPPED)
 	return nil
 }

@@ -17,6 +17,6 @@ func TestPressureMeter(t *testing.T) {
 		Error:  func(err error) { fmt.Printf("PressureMeter-->%s\n", err) },
 	}
 	app := Init(appCtx, conf)
-	err := app.Run(iris.Addr(":8080"))
+	err := app.Run(iris.Addr(":80"))
 	util.LogE(err)
 }

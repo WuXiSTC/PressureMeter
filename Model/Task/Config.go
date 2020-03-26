@@ -26,6 +26,7 @@ func DefaultConfig() Config {
 		JmxDir: "Data/jmx",
 		JtlDir: "Data/jtl",
 		LogDir: "Data/log",
+		IPList: &[]net.TCPAddr{},
 	}
 }
 

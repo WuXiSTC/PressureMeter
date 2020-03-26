@@ -59,7 +59,7 @@ func (conf *Config) getCommand(id string) *exec.Cmd {
 		for i, Addr := range *conf.IPList {
 			IPList[i] = Addr.String()
 		}
-		return exec.Command("jmeter", "--nongui",
+		return exec.Command("jmeter", "--nongui", "-Jserver.rmi.ssl.disable=true",
 			"--testfile", conf.jmxPath(id),
 			"--logfile", conf.jtlPath(id),
 			"--remotestart", strings.Join(IPList, ","))

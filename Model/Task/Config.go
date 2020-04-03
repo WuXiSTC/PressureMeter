@@ -1,12 +1,12 @@
 package Task
 
 import (
+	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -53,23 +53,29 @@ func (conf *Config) logPath(id string) string {
 }
 
 //通过id获取要执行的指令
-func (conf *Config) getCommand(id string) *exec.Cmd {
+func (conf *Config) getStartCommand(id string, shutdownPort uint16) *exec.Cmd {
 	if conf.IPList != nil && len(*conf.IPList) > 0 {
 		IPList := make([]string, len(*conf.IPList))
 		for i, Addr := range *conf.IPList {
 			IPList[i] = Addr.String()
 		}
-		return exec.Command("jmeter", "--nongui", "-Jserver.rmi.ssl.disable=true",
+		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),
 			"--logfile", conf.jtlPath(id),
-			"--remotestart", strings.Join(IPList, ","))
+			"--jmeterlogfile", conf.logPath(id),
+			"--jmeterproperty", fmt.Sprintf("jmeterengine.nongui.port=%d", shutdownPort),
+
+			"--remotestart", strings.Join(IPList, ","),
+			"--jmeterproperty", "server.rmi.ssl.disable=true")
 	} else {
 		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),
-			"--logfile", conf.jtlPath(id))
+			"--logfile", conf.jtlPath(id),
+			"--jmeterlogfile", conf.logPath(id),
+			"--jmeterproperty", fmt.Sprintf("jmeterengine.nongui.port=%d", shutdownPort))
 	}
 }
 
-func getStopCommand(port int) *exec.Cmd {
-	return exec.Command("shutdown.sh", strconv.Itoa(port))
+func (conf *Config) getStopCommand(shutdownPort uint16) *exec.Cmd {
+	return exec.Command("shutdown.sh", fmt.Sprintf("%d", shutdownPort))
 }

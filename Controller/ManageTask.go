@@ -4,7 +4,10 @@ import (
 	"gitee.com/WuXiSTC/PressureMeter/Model"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/kataras/iris"
+	"regexp"
 )
+
+var rex, _ = regexp.Compile("[\\s]")
 
 //新建任务，封装Service中的新建任务方法
 func NewTask(ctx iris.Context) {
@@ -18,7 +21,11 @@ func NewTask(ctx iris.Context) {
 		_ = file.Close()
 	}()
 
-	taskId := ctx.Params().Get("id")
+	taskId := rex.ReplaceAllString(ctx.Params().Get("id"), "")
+	if len(taskId) <= 0 {
+		responseMsg(ctx, iris.Map{"ok": false, "message": "请在Post的id字段指定您的任务ID"})
+		return
+	}
 	err = Model.AddNewTask(taskId, file)
 	if err != nil {
 		util.LogE(err)

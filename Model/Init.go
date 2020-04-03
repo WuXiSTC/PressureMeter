@@ -10,10 +10,10 @@ import (
 
 var TaskList = tasklist.TaskList
 
-var StateList = map[int]string{
-	tasklist.STATE_STOPPED:  "Stopped",
-	tasklist.STATE_QUEUEING: "Queueing",
-	tasklist.STATE_RUNNING:  "Running"}
+var StateList = map[tasklist.TaskState]string{
+	tasklist.STOPPED:  "Stopped",
+	tasklist.QUEUEING: "Queueing",
+	tasklist.RUNNING:  "Running"}
 
 type Config struct {
 	DaemonConfig Daemon.Config `yaml:"DaemonConfig" usage:"Configuration of PressureMater Daemon."`
@@ -38,7 +38,7 @@ func AddNewTask(taskId string, jmx multipart.File) error {
 	if TaskList.Exists(taskId) {
 		return errors.New("任务已存在")
 	}
-	tsk, err := task.Constructor(taskId, jmx)
+	tsk, err := task.New(taskId, jmx)
 	if err != nil {
 		return err
 	}

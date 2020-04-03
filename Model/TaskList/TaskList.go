@@ -30,7 +30,10 @@ func (tasklist *taskList) AddTask(t TaskInterface) error {
 //
 //返回任务信息获取接口和是否存在
 func (tasklist *taskList) GetInfo(id string) TaskInfo {
-	return tasklist.tasks[id]
+	if info, exists := tasklist.tasks[id]; exists {
+		return info
+	}
+	return nil
 }
 
 type TaskState int

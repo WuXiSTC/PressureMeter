@@ -12,12 +12,12 @@ import (
 func (tasklist *taskList) Start(id string, duration time.Duration) error {
 	task, exists := tasklist.tasks[id]
 	if !exists {
-		return errors.New("任务不存在")
+		return errors.New("not exists")
 	}
 	task.stateLock.Lock()
 	defer task.stateLock.Unlock()
 	if task.queueing { //如果已经在排队
-		return errors.New("任务已启动")
+		return errors.New("already started")
 	}
 	Daemon.AddTask(task, duration)
 	task.queueing = true
@@ -30,7 +30,7 @@ func (tasklist *taskList) Start(id string, duration time.Duration) error {
 func (tasklist *taskList) Stop(id string) error {
 	task, exists := tasklist.tasks[id]
 	if !exists {
-		return errors.New("任务不存在")
+		return errors.New("not exists")
 	}
 	task.stateLock.Lock()
 	defer task.stateLock.Unlock()

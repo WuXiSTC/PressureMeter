@@ -4,32 +4,33 @@ import "sync"
 
 //一个线程安全的取消值记录量，用于取消列表记录中在当前队列中每个各有多少次取消
 type count struct {
-	n  uint64
-	mu *sync.RWMutex
+	n  int64 //这个值最小只会到-1
+	mu *sync.Mutex
 }
 
 //加一次
-func (c *count) more() {
+func (c *count) more() int64 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	if c.n < 0 {
+		c.n = 1
+	}
 	c.n++
+	return c.n
 }
 
 //减一次
-func (c *count) less() {
+func (c *count) less() int64 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.n > 0 {
+	if c.n >= 0 {
 		c.n--
 	}
-}
-func (c *count) get() uint64 {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
 	return c.n
 }
-func (c *count) Get() uint64 {
-	return c.get()
+
+func (c *count) Get() int64 {
+	return c.n
 }
 
 //取消列表
@@ -43,7 +44,7 @@ var cancelQ = make(map[string]*count)
 func CancelTask(id string) {
 	canceln, exists := cancelQ[id]
 	if !exists {
-		cancelQ[id] = &count{1, new(sync.RWMutex)}
+		cancelQ[id] = &count{1, new(sync.Mutex)}
 	} else {
 		canceln.more() //取消次数加一
 	}

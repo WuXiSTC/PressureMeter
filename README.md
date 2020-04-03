@@ -126,6 +126,15 @@ Get接口，在`{id:path}`上写上任务ID，即可获取任务信息。
 app.Run(iris.Addr(":8080"))
 ```
 
+#### 运行例程
+
+在项目根目录：
+
+```go
+docker build -t pressure_meter .
+docker run --rm -p "80:8080" pressure_meter
+```
+
 ### 退出
 
 当初始化时向`Init(...)`传递的`context`退出时，iris app和后台Daemon会一起退出。例如在上文中初始化的`app`将会在20s后退出。

@@ -82,9 +82,9 @@ Get接口，在`{id:path}`上写上任务ID，即可删除任务。
 * 失败`ok`为`false`，且在`message`返回错误信息
 * 任务不存在返回状态码404
 
-#### /Task/start/{id:path}
+#### /Task/start/{id:path}&duration=10000
 
-Get接口，在`{id:path}`上写上任务ID，即可启动任务。这里的启动是指将任务放入Daemon中排队运行。
+Get接口，在`{id:path}`上写上任务ID、duration中填入任务的持续时间（单位纳秒），即可启动任务。这里的启动是指将任务放入Daemon中排队运行。
 
 返回值为json字符串`{"ok":bool,"message":string}`：
 

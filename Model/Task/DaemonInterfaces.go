@@ -1,49 +1,53 @@
 package Task
 
 import (
-	"bufio"
-	"errors"
 	"fmt"
-	"gitee.com/WuXiSTC/PressureMeter/Model/TaskList"
 	"gitee.com/WuXiSTC/PressureMeter/util"
-	"os"
-	"regexp"
-	"strconv"
 	"syscall"
+	"time"
 )
 
 func (tsk *task) GetID() string {
-	return *tsk.id
+	return tsk.id
 }
 
 //用于Daemon的接口，开始任务执行
-func (tsk *task) Start() error {
-	f, err := os.OpenFile(*tsk.logFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, os.ModePerm)
-	if err != nil {
-		return err
+func (tsk *task) Start(shutdownPort uint16, duration time.Duration) error {
+	tsk.stateLock.Lock()
+	defer tsk.stateLock.Unlock()
+	if tsk.running { //如果已经在运行
+		return nil //就退出
 	}
-	tsk.logfile = f
-	if tsk.command == nil {
-		tsk.command = conf.getCommand(*tsk.id)
+	tsk.shutdownPort = shutdownPort                          //获取关机端口
+	tsk.command = conf.getStartCommand(tsk.id, shutdownPort) //获取运行指令
+	if err := tsk.command.Start(); err != nil {              //启动
+		return err //失败即退出
 	}
-	tsk.command.Stdout = f
-	if err := tsk.command.Start(); err != nil {
-		util.LogE(f.Close())
-		return err
-	}
-	util.Log(fmt.Sprintf("Task %d started in PID %d", tsk.id, tsk.command.Process.Pid))
-	tsk.SetState(TaskList.STATE_RUNNING)
+	util.Log(fmt.Sprintf("Task %s started in PID %d", tsk.id, tsk.command.Process.Pid))
+	tsk.running = true
+
+	go func() {
+		errChan := make(chan error, 1)
+		go func() {
+			errChan <- tsk.command.Wait()
+		}()
+		select {
+		case <-time.After(duration):
+		case err := <-errChan:
+			util.LogE(err)
+		}
+		util.LogE(tsk.Stop())
+	}()
 	return nil
 }
 
 //用于Daemon的接口，等待任务完成，完成后清理资源
 func (tsk *task) Wait() error {
 	util.LogE(tsk.command.Wait())
-	util.LogE(tsk.logfile.Close())
-	tsk.command.Stdout = nil
-	tsk.logfile = nil
+	tsk.stateLock.Lock()
+	defer tsk.stateLock.Unlock()
 	tsk.command = nil //进程完成后清除进程
-	tsk.SetState(TaskList.STATE_STOPPED)
+	tsk.running = false
 	return nil
 }
 
@@ -51,11 +55,13 @@ func (tsk *task) Wait() error {
 //
 //先停止并删除进程再释放文件
 func (tsk *task) Stop() error {
-	if tsk.GetState() == TaskList.STATE_STOPPED { //如果已经停止就直接成功
+	tsk.stateLock.Lock()
+	defer tsk.stateLock.Unlock()
+	if !tsk.running { //如果已经停止就直接成功
 		return nil
 	}
 	if tsk.command.Process != nil {
-		if err := tsk.sendStopMsg(); err == nil {
+		if err := conf.getStopCommand(tsk.shutdownPort).Start(); err == nil {
 			return nil
 		} else {
 			util.LogE(err)
@@ -64,44 +70,7 @@ func (tsk *task) Stop() error {
 			return err
 		}
 	} else {
-		tsk.SetState(TaskList.STATE_STOPPED)
+		tsk.running = false
 	}
 	return nil
-}
-
-//向任务停止监听端口发送停止信号
-func (tsk *task) sendStopMsg() error {
-	port, err := tsk.getStopPort()
-	if err != nil {
-		return err
-	}
-	stopCommand := getStopCommand(port)
-	return stopCommand.Start()
-}
-
-//获取停止信号的监听端口，以读log的形式搞的，肥肠暴力
-func (tsk *task) getStopPort() (int, error) {
-	logPath := tsk.GetLogFilePath()
-	f, err := os.OpenFile(logPath, os.O_RDONLY, os.ModePerm)
-	if err != nil {
-		return 0, err
-	}
-	defer func() { util.LogE(f.Close()) }()
-
-	re, _ := regexp.Compile("Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port (.*)$")
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanLines)
-	for i := 0; i < 10 && scanner.Scan(); i++ {
-		s := re.FindSubmatch([]byte(scanner.Text()))
-		if len(s) >= 2 {
-			portStr := string(s[1])
-			port, err := strconv.Atoi(portStr)
-			if err != nil {
-				util.Log(fmt.Sprintf("Fail to detect port: %s", portStr))
-				return 0, err
-			}
-			return port, nil
-		}
-	}
-	return 0, errors.New("找不到端口记录")
 }

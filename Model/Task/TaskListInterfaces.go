@@ -2,7 +2,6 @@ package Task
 
 import (
 	"errors"
-	"gitee.com/WuXiSTC/PressureMeter/Model/TaskList"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"io"
 	"mime/multipart"
@@ -13,20 +12,20 @@ import (
 )
 
 type task struct {
-	id             *string   //任务的ID
-	configFilePath *string   //设置文件的路径
-	resultFilePath *string   //结果文件的路径
-	logFilePath    *string   //日志文件的路径
+	id             string    //任务的ID
+	configFilePath string    //设置文件的路径
+	resultFilePath string    //结果文件的路径
+	logFilePath    string    //日志文件的路径
 	command        *exec.Cmd //要执行的指令
-	logfile        *os.File  //日志文件流
-	state          *int      //运行状态
 	stateLock      *sync.RWMutex
+	shutdownPort   uint16
+	running        bool
 }
 
 //新建Task，相当于Task的构造函数
 //
 //输入值是任务ID和配置文件流，返回新建的任务指针和错误信息
-var Constructor = func(id string, configFile multipart.File) (*task, error) {
+func New(id string, configFile multipart.File) (*task, error) {
 	configFilePath := conf.jmxPath(id) //文件名是任务的id
 	resultFilePath := conf.jtlPath(id) //文件名是任务的id
 	logFilePath := conf.logPath(id)    //文件名是任务的id
@@ -52,9 +51,8 @@ var Constructor = func(id string, configFile multipart.File) (*task, error) {
 		return nil, err //创建日志文件
 	}
 
-	tsk := &task{&id, &configFilePath, &resultFilePath, &logFilePath,
-		nil, nil, new(int), new(sync.RWMutex)}
-	tsk.SetState(TaskList.STATE_STOPPED)
+	tsk := &task{id, configFilePath, resultFilePath, logFilePath,
+		nil, new(sync.RWMutex), 0, false}
 	return tsk, nil
 }
 
@@ -62,29 +60,19 @@ var Constructor = func(id string, configFile multipart.File) (*task, error) {
 //
 //先停止任务，然后删除任务相关文件
 func (tsk *task) Delete() error {
-	if tsk.GetState() != TaskList.STATE_STOPPED {
+	tsk.stateLock.Lock()
+	defer tsk.stateLock.Unlock()
+	if tsk.running {
 		return errors.New("任务未停止，无法删除")
 	}
-	if err := util.DeleteFile(*tsk.configFilePath); err != nil { //删除之前的配置文件
+	if err := util.DeleteFile(tsk.configFilePath); err != nil { //删除之前的配置文件
 		return err
 	}
-	if err := util.DeleteFile(*tsk.resultFilePath); err != nil { //删除之前的结果文件防止发生追加
+	if err := util.DeleteFile(tsk.resultFilePath); err != nil { //删除之前的结果文件防止发生追加
 		return err
 	}
-	if err := util.DeleteFile(*tsk.logFilePath); err != nil { //删除之前的日志文件防止发生追加
+	if err := util.DeleteFile(tsk.logFilePath); err != nil { //删除之前的日志文件防止发生追加
 		return err
 	}
 	return nil
-}
-
-func (tsk *task) GetState() int {
-	tsk.stateLock.RLock()
-	defer tsk.stateLock.RUnlock()
-	return *tsk.state
-}
-
-func (tsk *task) SetState(state int) {
-	tsk.stateLock.Lock()
-	defer tsk.stateLock.Unlock()
-	tsk.state = &state
 }

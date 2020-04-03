@@ -7,47 +7,40 @@ import (
 )
 
 type taskList struct {
-	tasks map[string]*TaskInterface
+	tasks map[string]*task
 }
 
-var TaskList = taskList{make(map[string]*TaskInterface)}
+var TaskList = taskList{make(map[string]*task)}
 
 //插入一个任务
 //
 //应该先删除ID对应的任务再插入
-func (tasklist *taskList) AddTask(tsk TaskInterface) error {
+func (tasklist *taskList) AddTask(tsk *task) error {
 	_, exists := tasklist.tasks[tsk.GetID()]
 	if exists {
 		return errors.New("任务已存在")
 	}
-	tasklist.tasks[tsk.GetID()] = &tsk
+	tasklist.tasks[tsk.GetID()] = tsk
 	return nil
 }
 
 //按照ID获取任务
 //
 //返回任务信息获取接口和是否存在
-func (tasklist *taskList) GetInfo(id string) (*TaskInfo, bool) {
-	tsk, exists := tasklist.tasks[id]
-	if tsk != nil {
-		var tskI TaskInfo = *tsk
-		return &tskI, exists
-	}
-	return nil, exists
+func (tasklist *taskList) GetInfo(id string) TaskInfo {
+	return tasklist.tasks[id]
 }
 
 //按照ID删除任务
 //
 //返回任务是否存在和错误信息
-func (tasklist *taskList) DelTask(id string) (bool, error) {
+func (tasklist *taskList) DelTask(id string) (exists bool, err error) {
 	tsk, exists := tasklist.tasks[id]
 	if exists {
-		if err := (*tsk).Delete(); err != nil {
-			return exists, err
-		}
+		err = (*tsk).Delete()
 		delete(tasklist.tasks, id)
 	}
-	return exists, nil
+	return
 }
 
 func (tasklist *taskList) Exists(id string) bool {

@@ -1,41 +1,45 @@
 package TaskList
 
 import (
+	"errors"
 	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
+	"time"
 )
 
 //将一个任务加进任务队列
 //
 //不会返回错误，返回的bool表示任务是否存在
-func (tasklist *taskList) Start(id string) bool {
+func (tasklist *taskList) Start(id string, duration time.Duration) error {
 	task, exists := tasklist.tasks[id]
 	if !exists {
-		return exists
+		return errors.New("任务不存在")
 	}
-	state := (*task).GetState()
-	if state == STATE_QUEUEING || state == STATE_RUNNING {
-		return exists
+	task.stateLock.Lock()
+	defer task.stateLock.Unlock()
+	if task.queueing {
+		return errors.New("任务已启动")
 	}
-	(*task).SetState(STATE_QUEUEING)
-	Daemon.AddTask(*task)
-	return exists
+	Daemon.AddTask(task, duration)
+	task.queueing = true
+	return nil
 }
 
 //将一个任务停止执行
 //
 //返回任务是否存在和错误信息
-func (tasklist *taskList) Stop(id string) (bool, error) {
+func (tasklist *taskList) Stop(id string) error {
 	task, exists := tasklist.tasks[id]
 	if !exists {
-		return exists, nil
+		return errors.New("任务不存在")
 	}
-	switch (*task).GetState() {
-	case STATE_RUNNING: //如果在运行
-		return exists, (*task).Stop() //那就停止
-	case STATE_QUEUEING: //如果在队列中
+	task.stateLock.Lock()
+	defer task.stateLock.Unlock()
+	if task.IsRunning() { //如果在运行
+		return task.Stop() //那就停止
+	}
+	if task.queueing {
 		Daemon.CancelTask(id) //那就取消
-		(*task).SetState(STATE_STOPPED)
-		return exists, nil
 	}
-	return exists, nil
+	task.queueing = false
+	return nil
 }

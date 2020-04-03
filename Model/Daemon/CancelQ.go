@@ -28,6 +28,9 @@ func (c *count) get() uint64 {
 	defer c.mu.RUnlock()
 	return c.n
 }
+func (c *count) Get() uint64 {
+	return c.get()
+}
 
 //取消列表
 //

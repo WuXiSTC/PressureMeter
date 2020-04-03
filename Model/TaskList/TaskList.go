@@ -63,10 +63,11 @@ func (tasklist *taskList) GetState(id string) TaskState {
 //
 //返回任务是否存在和错误信息
 func (tasklist *taskList) DelTask(id string) (exists bool, err error) {
-	tsk, exists := tasklist.tasks[id]
-	if exists {
-		err = tsk.Delete()
-		delete(tasklist.tasks, id)
+	var tsk *task
+	if tsk, exists = tasklist.tasks[id]; exists {
+		if err = tsk.Delete(); err == nil {
+			delete(tasklist.tasks, id)
+		}
 	}
 	return
 }

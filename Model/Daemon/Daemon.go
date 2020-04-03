@@ -11,7 +11,7 @@ import (
 type TaskInterface interface {
 	GetID() string                                           //获取任务ID
 	Start(shutdownPort uint16, duration time.Duration) error //启动
-	Wait() error                                             //等待
+	Wait()                                                   //等待
 	Stop() error                                             //停止
 }
 
@@ -37,7 +37,7 @@ func run1task(i uint16) {
 	}
 	if err := tsk.Start(conf.BasePort-i, tsk.duration); err == nil { //否则就运行
 		util.Log(fmt.Sprintf("Daemon %d: started task %s", i, tsk.GetID()))
-		util.LogE(tsk.Wait())
+		tsk.Wait()
 		util.Log(fmt.Sprintf("Daemon %d: stopped task %s", i, tsk.GetID()))
 	} else { //运行出错则停止
 		util.LogE(err)

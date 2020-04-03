@@ -28,6 +28,12 @@ func (tsk *task) GetLogFilePath() string {
 	return tsk.logFilePath
 }
 
+//此任务是否在运行
 func (tsk *task) IsRunning() bool {
-	return tsk.running
+	select {
+	case <-tsk.ctx.Done(): //如果已经结束
+		return false //就是不在运行
+	default: //否则
+		return true //就是在运行
+	}
 }

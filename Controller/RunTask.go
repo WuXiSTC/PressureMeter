@@ -12,9 +12,10 @@ import (
 //返回启动是否成功和错误信息
 func StartTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
-	duration, err := ctx.Params().GetInt64("duration")
+	duration, err := ctx.URLParamInt64("duration")
 	if err != nil {
 		responseMsg(ctx, iris.Map{"ok": false, "message": "duration格式错误"})
+		return
 	}
 	if err := Model.TaskList.Start(taskId, time.Duration(duration)); err != nil {
 		switch err.Error() {

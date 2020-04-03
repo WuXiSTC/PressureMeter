@@ -1,6 +1,7 @@
 package Task
 
 import (
+	"context"
 	"errors"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"io"
@@ -17,9 +18,9 @@ type task struct {
 	resultFilePath string    //结果文件的路径
 	logFilePath    string    //日志文件的路径
 	command        *exec.Cmd //要执行的指令
-	stateLock      *sync.RWMutex
+	stateLock      *sync.Mutex
 	shutdownPort   uint16
-	running        bool
+	ctx            context.Context
 }
 
 //新建Task，相当于Task的构造函数
@@ -51,8 +52,10 @@ func New(id string, configFile multipart.File) (*task, error) {
 		return nil, err //创建日志文件
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
 	tsk := &task{id, configFilePath, resultFilePath, logFilePath,
-		nil, new(sync.RWMutex), 0, false}
+		nil, new(sync.Mutex), 0, ctx}
+	cancel()
 	return tsk, nil
 }
 
@@ -60,9 +63,7 @@ func New(id string, configFile multipart.File) (*task, error) {
 //
 //先停止任务，然后删除任务相关文件
 func (tsk *task) Delete() error {
-	tsk.stateLock.Lock()
-	defer tsk.stateLock.Unlock()
-	if tsk.running {
+	if tsk.IsRunning() {
 		return errors.New("任务未停止，无法删除")
 	}
 	if err := util.DeleteFile(tsk.configFilePath); err != nil { //删除之前的配置文件

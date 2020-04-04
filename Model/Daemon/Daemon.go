@@ -11,10 +11,10 @@ import (
 
 //任务基础接口
 type TaskInterface interface {
-	GetID() string                                                                  //获取任务ID
-	Start(shutdownPort uint16, duration time.Duration, ipList *[]net.TCPAddr) error //启动
-	Wait()                                                                          //等待
-	Stop() error                                                                    //停止
+	GetID() string                                                                 //获取任务ID
+	Start(shutdownPort uint16, duration time.Duration, ipList []net.TCPAddr) error //启动
+	Wait()                                                                         //等待
+	Stop() error                                                                   //停止
 }
 
 type task struct {

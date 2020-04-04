@@ -18,7 +18,7 @@ func (tsk *task) GetID() string {
 var rex, _ = regexp.Compile("\\s")
 
 //用于Daemon的接口，开始任务执行
-func (tsk *task) Start(shutdownPort uint16, duration time.Duration, ipList *[]net.TCPAddr) error {
+func (tsk *task) Start(shutdownPort uint16, duration time.Duration, ipList []net.TCPAddr) error {
 	tsk.stateLock.Lock()
 	defer tsk.stateLock.Unlock()
 	if tsk.IsRunning() { //如果已经在运行

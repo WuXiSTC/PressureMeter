@@ -49,10 +49,10 @@ func (conf *Config) logPath(id string) string {
 }
 
 //通过id获取要执行的指令
-func (conf *Config) getStartCommand(id string, shutdownPort uint16, ipList *[]net.TCPAddr) *exec.Cmd {
-	if ipList != nil && len(*ipList) > 0 {
-		IPList := make([]string, len(*ipList))
-		for i, Addr := range *ipList {
+func (conf *Config) getStartCommand(id string, shutdownPort uint16, ipList []net.TCPAddr) *exec.Cmd {
+	if ipList != nil && len(ipList) > 0 {
+		IPList := make([]string, len(ipList))
+		for i, Addr := range ipList {
 			IPList[i] = Addr.String()
 		}
 		return exec.Command("jmeter", "--nongui",

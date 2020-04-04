@@ -15,6 +15,7 @@ func getIPList(i uint16) (list *[]net.TCPAddr) {
 	return
 }
 
+//修改Jmeter服务IP列表
 func SetIPList(list [][]net.TCPAddr) error {
 	if len(list) < int(conf.TaskAccN) {
 		return errors.New(fmt.Sprintf("请至少指定%d组IP", conf.TaskAccN))

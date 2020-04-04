@@ -120,6 +120,12 @@ Get接口，在`{id:path}`上写上任务ID，即可获取任务信息。
 * 成功获取则返回对应文件：`/Task/getConfig/{id:path}`返回配置文件、`/Task/getResult/{id:path}`返回结果文件、`/Task/getLog/{id:path}`返回日志文件
 * 任务不存在则返回状态码404
 
+#### /Task/ExpectDuration
+
+Get接口，无输入值
+
+返回值为一个数字，表示当前系统内所有任务完成的所需的预期时间。
+
 ### 运行
 
 ```go

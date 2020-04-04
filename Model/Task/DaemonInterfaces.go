@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/util"
+	"regexp"
 	"syscall"
 	"time"
 )
@@ -12,6 +13,8 @@ import (
 func (tsk *task) GetID() string {
 	return tsk.id
 }
+
+var rex, _ = regexp.Compile("\\s")
 
 //用于Daemon的接口，开始任务执行
 func (tsk *task) Start(shutdownPort uint16, duration time.Duration) error {
@@ -30,11 +33,15 @@ func (tsk *task) Start(shutdownPort uint16, duration time.Duration) error {
 		go func() { //命令行输出线程
 			for {
 				line, _, _ := buf.ReadLine()
-				util.Log(fmt.Sprintf("Jmeter(shutdownPort %d)-->", shutdownPort) + string(line))
+				s := string(line)
+				if len(rex.ReplaceAllString(s, "")) > 0 {
+					util.Log(fmt.Sprintf("Jmeter(shutdownPort %d)-->", shutdownPort) + s)
+				}
 				select {
 				case <-ctx.Done():
 					return
 				default:
+					time.Sleep(1e8)
 					continue
 				}
 			}

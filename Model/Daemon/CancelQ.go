@@ -46,10 +46,19 @@ func CancelTask(id string) {
 	cancelQMu.Lock()
 	defer cancelQMu.Unlock()
 
+	taskDurationMu.Lock()
+	defer taskDurationMu.Unlock()
+
 	canceln, exists := cancelQ[id]
 	if !exists {
 		cancelQ[id] = &count{1, new(sync.Mutex)}
 	} else {
 		canceln.more() //取消次数加一
 	}
+
+	durations, exists := taskDuration[id]
+	if exists && len(durations) >= 1 {
+		taskDuration[id] = durations[1:]
+	}
+	durationCached = false
 }

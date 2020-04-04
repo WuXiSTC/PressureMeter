@@ -3,6 +3,7 @@ package Daemon
 import (
 	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/util"
+	"github.com/yindaheng98/go-utility/SortedSet"
 	"sync"
 	"time"
 )
@@ -46,10 +47,19 @@ func run1task(i uint16) {
 		err = tsk.Stop()
 		util.LogE(err)
 	}
+	taskDurationMu.Lock()
+	defer taskDurationMu.Unlock()
+	durations, exists := taskDuration[tsk.GetID()]
+	if exists && len(durations) >= 1 {
+		taskDuration[tsk.GetID()] = durations[1:]
+	}
+	durationCached = false
 }
 
 var toStop = false
 var stopped = make(chan uint16)
+var taskDuration = make(map[string][]time.Duration)
+var taskDurationMu = new(sync.RWMutex)
 
 //将一个任务交给daemon运行
 //
@@ -59,7 +69,13 @@ func AddTask(tsk TaskInterface, duration time.Duration) {
 		TaskInterface: tsk,
 		duration:      duration,
 	} //入队列
+	taskDurationMu.Lock()
+	defer taskDurationMu.Unlock()
+	durations := taskDuration[tsk.GetID()]
+	durations = append(durations, duration)
+	taskDuration[tsk.GetID()] = durations
 	Qn.more() //队列中任务数量+1
+	durationCached = false
 }
 
 //停止Daemon运行
@@ -72,7 +88,35 @@ func Stop() {
 	}
 }
 
+var durationCache = time.Duration(0)
+var durationCached = false
+
 func ExpectDuration() time.Duration {
-	d := time.Duration(0)
-	return d / time.Duration(conf.TaskAccN)
+	if durationCached {
+		return durationCache
+	}
+	taskDurationMu.RLock()
+	defer taskDurationMu.RUnlock()
+	set := SortedSet.New(uint64(conf.TaskAccN))
+	for i := uint16(0); i < conf.TaskAccN; i++ {
+		set.Update(element(i), 0)
+	}
+	for _, durations := range taskDuration {
+		for _, duration := range durations {
+			set.DeltaUpdate(set.Sorted(1)[0], float64(duration))
+		}
+	}
+	d, ds := float64(0), set.SortedAll()
+	if len(ds) >= 1 {
+		d, _ = set.GetWeight(ds[len(ds)-1])
+	}
+	durationCache = time.Duration(d)
+	durationCached = true
+	return durationCache
+}
+
+type element uint16
+
+func (e element) GetName() string {
+	return fmt.Sprintf("%d", e)
 }

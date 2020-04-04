@@ -14,9 +14,6 @@ type Config struct {
 	JmxDir string `yaml:"JmxDir" usage:"存放jmx文件的目录位置"`
 	JtlDir string `yaml:"JtlDir" usage:"存放jtl结果文件的目录位置"`
 	LogDir string `yaml:"logDir" usage:"存放日志文件的目录位置"`
-
-	//用于设置Jmeter分布式测试指令中输入的从机IP列表
-	IPList *[]net.TCPAddr `yaml:"-"`
 }
 
 var conf Config
@@ -26,7 +23,6 @@ func DefaultConfig() Config {
 		JmxDir: "Data/jmx",
 		JtlDir: "Data/jtl",
 		LogDir: "Data/log",
-		IPList: &[]net.TCPAddr{},
 	}
 }
 
@@ -53,10 +49,10 @@ func (conf *Config) logPath(id string) string {
 }
 
 //通过id获取要执行的指令
-func (conf *Config) getStartCommand(id string, shutdownPort uint16) *exec.Cmd {
-	if conf.IPList != nil && len(*conf.IPList) > 0 {
-		IPList := make([]string, len(*conf.IPList))
-		for i, Addr := range *conf.IPList {
+func (conf *Config) getStartCommand(id string, shutdownPort uint16, ipList *[]net.TCPAddr) *exec.Cmd {
+	if ipList != nil && len(*ipList) > 0 {
+		IPList := make([]string, len(*ipList))
+		for i, Addr := range *ipList {
 			IPList[i] = Addr.String()
 		}
 		return exec.Command("jmeter", "--nongui",

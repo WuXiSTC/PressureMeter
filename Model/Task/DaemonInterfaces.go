@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/util"
+	"net"
 	"regexp"
 	"syscall"
 	"time"
@@ -17,15 +18,15 @@ func (tsk *task) GetID() string {
 var rex, _ = regexp.Compile("\\s")
 
 //用于Daemon的接口，开始任务执行
-func (tsk *task) Start(shutdownPort uint16, duration time.Duration) error {
+func (tsk *task) Start(shutdownPort uint16, duration time.Duration, ipList *[]net.TCPAddr) error {
 	tsk.stateLock.Lock()
 	defer tsk.stateLock.Unlock()
 	if tsk.IsRunning() { //如果已经在运行
 		return nil //就退出
 	}
-	tsk.shutdownPort = shutdownPort                          //获取关机端口
-	tsk.command = conf.getStartCommand(tsk.id, shutdownPort) //获取运行指令
-	ctx, cancel := context.WithCancel(context.Background())  //新建运行标记
+	tsk.shutdownPort = shutdownPort                                  //获取关机端口
+	tsk.command = conf.getStartCommand(tsk.id, shutdownPort, ipList) //获取运行指令
+	ctx, cancel := context.WithCancel(context.Background())          //新建运行标记
 	tsk.ctx = ctx
 
 	if stdout, err := tsk.command.StdoutPipe(); err == nil { //获取输出

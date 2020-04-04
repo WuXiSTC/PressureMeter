@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/yindaheng98/go-utility/SortedSet"
+	"net"
 	"sync"
 	"time"
 )
 
 //任务基础接口
 type TaskInterface interface {
-	GetID() string                                           //获取任务ID
-	Start(shutdownPort uint16, duration time.Duration) error //启动
-	Wait()                                                   //等待
-	Stop() error                                             //停止
+	GetID() string                                                                  //获取任务ID
+	Start(shutdownPort uint16, duration time.Duration, ipList *[]net.TCPAddr) error //启动
+	Wait()                                                                          //等待
+	Stop() error                                                                    //停止
 }
 
 type task struct {
@@ -38,7 +39,7 @@ func run1task(i uint16) {
 	if exists && cancel.less() >= 0 { //如果已取消就不运行
 		return
 	}
-	if err := tsk.Start(conf.BasePort-i, tsk.duration); err == nil { //否则就运行
+	if err := tsk.Start(conf.BasePort-i, tsk.duration, getIPList(i)); err == nil { //否则就运行
 		util.Log(fmt.Sprintf("Daemon %d: started task %s", i, tsk.GetID()))
 		tsk.Wait()
 		util.Log(fmt.Sprintf("Daemon %d: stopped task %s", i, tsk.GetID()))

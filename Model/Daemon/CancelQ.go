@@ -37,11 +37,15 @@ func (c *count) Get() int64 {
 //
 //队列中按照id存储每个任务的取消次数
 var cancelQ = make(map[string]*count)
+var cancelQMu = new(sync.RWMutex)
 
 //取消一个在daemon中的任务
 //
 //在取消队列中的对应项取消次数加一
 func CancelTask(id string) {
+	cancelQMu.Lock()
+	defer cancelQMu.Unlock()
+
 	canceln, exists := cancelQ[id]
 	if !exists {
 		cancelQ[id] = &count{1, new(sync.Mutex)}

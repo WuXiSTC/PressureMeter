@@ -30,8 +30,10 @@ func run1task(i uint16) {
 		return
 	}
 	util.Log(fmt.Sprintf("Daemon %d: get task %s", i, tsk.GetID()))
+	cancelQMu.RLock()
 	Qn.less() //队列中任务数量-1
 	cancel, exists := cancelQ[tsk.GetID()]
+	cancelQMu.RUnlock()
 	if exists && cancel.less() >= 0 { //如果已取消就不运行
 		return
 	}
@@ -68,4 +70,9 @@ func Stop() {
 		goi := <-stopped
 		util.Log(fmt.Sprintf("Daemon %d stopped", goi))
 	}
+}
+
+func ExpectDuration() time.Duration {
+	d := time.Duration(0)
+	return d / time.Duration(conf.TaskAccN)
 }

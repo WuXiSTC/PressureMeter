@@ -60,15 +60,18 @@ func (conf *Config) getStartCommand(id string, shutdownPort uint16, ipList []net
 			"--logfile", conf.jtlPath(id),
 			"--jmeterlogfile", conf.logPath(id),
 			"--jmeterproperty", fmt.Sprintf("jmeterengine.nongui.port=%d", shutdownPort),
+			"--jmeterproperty", fmt.Sprintf("jmeterengine.nongui.maxport=%d", shutdownPort),
 
 			"--remotestart", strings.Join(IPList, ","),
-			"--jmeterproperty", "server.rmi.ssl.disable=true")
+			"--jmeterproperty", "server.rmi.ssl.disable=true",
+			"--remoteexit")
 	} else {
 		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),
 			"--logfile", conf.jtlPath(id),
 			"--jmeterlogfile", conf.logPath(id),
-			"--jmeterproperty", fmt.Sprintf("jmeterengine.nongui.port=%d", shutdownPort))
+			"--jmeterproperty", fmt.Sprintf("jmeterengine.nongui.port=%d", shutdownPort),
+			"--jmeterproperty", fmt.Sprintf("jmeterengine.nongui.maxport=%d", shutdownPort))
 	}
 }
 

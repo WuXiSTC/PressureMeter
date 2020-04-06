@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
 	"gitee.com/WuXiSTC/PressureMeter/util"
-	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -56,7 +55,7 @@ func (conf *Config) logPath(id string) string {
 }
 
 func (conf *Config) startCommand(id string, i uint16) *exec.Cmd {
-	return conf.getStartCommand(id, conf.getShutdownPort(i), getIPList(i))
+	return conf.getStartCommand(id, conf.getShutdownPort(i), getHosts(i))
 }
 
 func (conf *Config) stopCommand(i uint16) *exec.Cmd {
@@ -68,12 +67,8 @@ func (conf *Config) getShutdownPort(i uint16) uint16 {
 }
 
 //通过id获取要执行的指令
-func (conf *Config) getStartCommand(id string, shutdownPort uint16, ipList []net.TCPAddr) *exec.Cmd {
-	if ipList != nil && len(ipList) > 0 {
-		IPList := make([]string, len(ipList))
-		for i, Addr := range ipList {
-			IPList[i] = Addr.String()
-		}
+func (conf *Config) getStartCommand(id string, shutdownPort uint16, IPList []string) *exec.Cmd {
+	if IPList != nil && len(IPList) > 0 {
 		return exec.Command("jmeter", "--nongui",
 			"--testfile", conf.jmxPath(id),
 			"--logfile", conf.jtlPath(id),

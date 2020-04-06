@@ -31,7 +31,7 @@ func Cancel(id string) {
 	defer runningsMu.Unlock()
 	for i, task := range runnings {
 		if task.GetID() == id {
-			task.Stop(i)
+			task.Stop(uint16(i))
 			return
 		}
 	}

@@ -18,12 +18,10 @@ const (
 
 //获取任务状态
 func GetState(id string) TaskState {
-	queueMu.RLock()
-	defer queueMu.RUnlock()
 	runningsMu.RLock()
 	defer runningsMu.RUnlock()
 	for _, task := range runnings {
-		if task.GetID() == id {
+		if task != nil && task.GetID() == id {
 			return RUNNING
 		}
 	}

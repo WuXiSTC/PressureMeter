@@ -8,28 +8,21 @@ import (
 )
 
 var queue *QueueSet.QueueSet
-var queueMu = new(sync.RWMutex)
 
 //将一个任务交给daemon运行
 //
 //入任务队列
 func Queue(t TaskInterface) {
-	queueMu.Lock()
-	defer queueMu.Unlock()
 	queue.Push(t)
 }
 
 //取消一个任务的运行
 func Cancel(id string) {
-	queueMu.Lock()
-	defer queueMu.Unlock()
-	if queue.Exists(id) {
-		queue.Cancel(id)
-	}
-	runningsMu.Lock()
-	defer runningsMu.Unlock()
+	queue.Cancel(id)
+	runningsMu.RLock()
+	defer runningsMu.RUnlock()
 	for i, task := range runnings {
-		if task.GetID() == id {
+		if task != nil && task.GetID() == id {
 			task.Stop(uint16(i))
 		}
 	}
@@ -40,14 +33,12 @@ var runningsMu = new(sync.RWMutex)
 
 //运行一个任务
 func run1task(i uint16) {
-	queueMu.Lock()
 	task := queue.Pop().(TaskInterface) //出队列
 	if task == nil {
 		return
 	}
 
 	runningsMu.Lock()
-	queueMu.Unlock()
 	runnings[i] = task
 	util.Log(fmt.Sprintf("Daemon %d: get task %s", i, task.GetID()))
 	task.Start(i) //启动

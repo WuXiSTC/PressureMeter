@@ -10,7 +10,7 @@ import (
 
 func TestPressureMeter(t *testing.T) {
 	ctx := context.Background()
-	appCtx, _ := context.WithTimeout(ctx, 20e9)
+	appCtx, _ := context.WithTimeout(ctx, 1000e9)
 	conf := DefaultConfig()
 	conf.LoggerConfig = &util.LoggerConfig{
 		Logger: func(s string) { fmt.Printf("PressureMeter-->%s\n", s) },

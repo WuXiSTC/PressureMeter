@@ -3,7 +3,6 @@ package Controller
 import (
 	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/Model"
-	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/kataras/iris"
 )
@@ -39,18 +38,18 @@ func NewTask(ctx iris.Context) {
 //删除成功ok为true，否则ok为false并返回错误信息
 func DeleteTask(ctx iris.Context) {
 	taskId := ctx.Params().Get("id")
-	if exists, err := Model.TaskList.DelTask(taskId); !exists {
+	if err := Model.TaskList.DelTask(taskId); err == nil {
+		responseMsg(ctx, iris.Map{"ok": true, "message": "删除成功"})
+		return
+	} else if err.Error() == "not exists" {
 		ctx.StatusCode(iris.StatusNotFound)
 		return
-	} else if err != nil {
-		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
-		return
 	} else {
-		responseMsg(ctx, iris.Map{"ok": true, "message": "删除成功"})
+		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 	}
 }
 
-func ExpectDuration(ctx iris.Context) {
-	_, err := ctx.WriteString(fmt.Sprintf("%d", Daemon.ExpectDuration()))
+func ExpectDuration(ctx iris.Context) { //TODO
+	_, err := ctx.WriteString(fmt.Sprintf("%d", 0))
 	util.LogE(err)
 }

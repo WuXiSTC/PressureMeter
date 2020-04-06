@@ -214,6 +214,10 @@ github.com/yindaheng98/go-utility v0.0.0-20200309115846-83b304e8e086 h1:xx+tMQFf
 github.com/yindaheng98/go-utility v0.0.0-20200309115846-83b304e8e086/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
 github.com/yindaheng98/go-utility v0.0.0-20200319143556-7cb66f147a9c h1:evR9YqpBYEAzZCMW/U4DStmj8XJGRwVfylPTOqeTnr4=
 github.com/yindaheng98/go-utility v0.0.0-20200319143556-7cb66f147a9c/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
+github.com/yindaheng98/go-utility v0.0.0-20200406054152-65b3e0322aab h1:XtUI5dP29lBy6B8wlv7gIdyuL+cp/iYOSPtVqTvuhSA=
+github.com/yindaheng98/go-utility v0.0.0-20200406054152-65b3e0322aab/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
+github.com/yindaheng98/go-utility v0.0.0-20200406063654-ccf0e5835599 h1:kmasPIn30vMrKl6eIwLcQlFzvG7B4TezLqCe/jJGgRY=
+github.com/yindaheng98/go-utility v0.0.0-20200406063654-ccf0e5835599/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
 github.com/yindaheng98/gogisnet v0.0.0-20200317093735-716fe987adef h1:CkP84DKB0MviNtE7Yls5xweyNRKdxyS+Vl7xORBJnnM=
 github.com/yindaheng98/gogisnet v0.0.0-20200317093735-716fe987adef/go.mod h1:va/HUQuzlhL/4HV27prKILA7tOI75wJgezxlU6+8Z9s=
 github.com/yindaheng98/gogistry v0.0.0-20200314154143-3f318b478377 h1:q6Nvsny5sXTF9ph/7vbhujkqSWPG1jrux8iZyXuvq+c=

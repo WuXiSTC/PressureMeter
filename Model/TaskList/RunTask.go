@@ -13,16 +13,16 @@ var daemonMu = new(sync.RWMutex)
 //将一个任务加进任务队列
 //
 //不会返回错误，返回任务是否存在
-func Start(id string, duration time.Duration) error {
-	tasklistMu.RLock()
-	defer tasklistMu.RUnlock()
+func (tl *taskList) Start(id string, duration time.Duration) error {
+	tl.mu.RLock()
+	defer tl.mu.RUnlock()
 	daemonMu.Lock()
 	defer daemonMu.Unlock()
-	switch getState(id) {
+	switch tl.getState(id) {
 	case NOTEXISTS:
 		return errors.New("not exists")
 	case STOPPED:
-		task := tasklist[id]
+		task := tl.list[id]
 		task.SetDuration(duration)
 		Daemon.Queue(task)
 	default:
@@ -34,12 +34,12 @@ func Start(id string, duration time.Duration) error {
 //将一个任务停止执行
 //
 //返回任务是否存在
-func Stop(id string) error {
-	tasklistMu.RLock()
-	defer tasklistMu.RUnlock()
+func (tl *taskList) Stop(id string) error {
+	tl.mu.RLock()
+	defer tl.mu.RUnlock()
 	daemonMu.Lock()
 	defer daemonMu.Unlock()
-	switch getState(id) {
+	switch tl.getState(id) {
 	case NOTEXISTS:
 		return errors.New("not exists")
 	case STOPPED:
@@ -59,22 +59,22 @@ const (
 	STOPPED   TaskState = 2
 )
 
-func GetState(id string) TaskState {
-	tasklistMu.RLock()
-	defer tasklistMu.RUnlock()
+func (tl *taskList) GetState(id string) TaskState {
+	tl.mu.RLock()
+	defer tl.mu.RUnlock()
 	daemonMu.RLock()
 	defer daemonMu.RUnlock()
-	return getState(id)
+	return tl.getState(id)
 }
 
-func getState(id string) TaskState {
+func (tl *taskList) getState(id string) TaskState {
 	switch Daemon.GetState(id) {
 	case Daemon.RUNNING:
 		return RUNNING
 	case Daemon.QUEUEING:
 		return QUEUEING
 	default:
-		if _, exists := tasklist[id]; !exists {
+		if _, exists := tl.list[id]; !exists {
 			return NOTEXISTS
 		} else {
 			return STOPPED
@@ -83,13 +83,13 @@ func getState(id string) TaskState {
 }
 
 //停止所有任务
-func StopAll() {
-	tasklistMu.RLock()
-	defer tasklistMu.RUnlock()
+func (tl *taskList) StopAll() {
+	tl.mu.RLock()
+	defer tl.mu.RUnlock()
 	daemonMu.Lock()
 	defer daemonMu.Unlock()
 	Daemon.Stop()
-	for id := range tasklist {
+	for id := range tl.list {
 		Daemon.Cancel(id)
 	}
 	util.Log("All tasks stopped")

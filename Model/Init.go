@@ -35,7 +35,7 @@ func Init(c Config) {
 
 //新建并添加一个新Task
 func AddNewTask(taskId string, jmx multipart.File) error {
-	if TaskList.Exists(taskId) {
+	if TaskList.GetState(taskId) != tasklist.NOTEXISTS {
 		return errors.New("任务已存在")
 	}
 	tsk, err := task.New(taskId, jmx)

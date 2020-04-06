@@ -6,30 +6,37 @@ import (
 	"sync"
 )
 
-var tasklist map[string]TaskInterface
-var tasklistMu = new(sync.RWMutex)
+var TaskList = taskList{
+	list: map[string]TaskInterface{},
+	mu:   new(sync.RWMutex),
+}
+
+type taskList struct {
+	list map[string]TaskInterface
+	mu   *sync.RWMutex
+}
 
 //插入一个任务
 //
 //应该先删除ID对应的任务再插入
-func AddTask(tsk TaskInterface) error {
-	tasklistMu.Lock()
-	defer tasklistMu.Unlock()
-	_, exists := tasklist[tsk.GetID()]
+func (tl *taskList) AddTask(tsk TaskInterface) error {
+	tl.mu.Lock()
+	defer tl.mu.Unlock()
+	_, exists := tl.list[tsk.GetID()]
 	if exists {
 		return errors.New("任务已存在")
 	}
-	tasklist[tsk.GetID()] = tsk
+	tl.list[tsk.GetID()] = tsk
 	return nil
 }
 
 //按照ID获取任务
 //
 //返回任务信息获取接口和是否存在
-func GetInfo(id string) TaskInfo {
-	tasklistMu.RLock()
-	defer tasklistMu.RUnlock()
-	if info, exists := tasklist[id]; exists {
+func (tl *taskList) GetInfo(id string) TaskInfo {
+	tl.mu.RLock()
+	defer tl.mu.RUnlock()
+	if info, exists := tl.list[id]; exists {
 		return info
 	}
 	return nil
@@ -38,14 +45,14 @@ func GetInfo(id string) TaskInfo {
 //按照ID删除任务
 //
 //返回任务是否存在和错误信息
-func DelTask(id string) (err error) {
-	tasklistMu.Lock()
-	defer tasklistMu.Unlock()
-	switch getState(id) {
+func (tl *taskList) DelTask(id string) (err error) {
+	tl.mu.Lock()
+	defer tl.mu.Unlock()
+	switch tl.getState(id) {
 	case STOPPED: //存在且已停止，可删
-		if tsk, exists := tasklist[id]; exists {
+		if tsk, exists := tl.list[id]; exists {
 			if err = tsk.Delete(); err == nil {
-				delete(tasklist, id)
+				delete(tl.list, id)
 			}
 		}
 	case NOTEXISTS: //不存在
@@ -57,16 +64,16 @@ func DelTask(id string) (err error) {
 }
 
 //删除所有任务
-func DelAll() error {
-	tasklistMu.Lock()
-	defer tasklistMu.Unlock()
-	StopAll()
-	for id := range tasklist {
-		if err := DelTask(id); err != nil {
+func (tl *taskList) DelAll() error {
+	tl.mu.Lock()
+	defer tl.mu.Unlock()
+	tl.StopAll()
+	for id := range tl.list {
+		if err := tl.DelTask(id); err != nil {
 			return err
 		}
 	}
 	util.Log("All tasks deleted")
-	tasklist = nil
+	tl.list = nil
 	return nil
 }

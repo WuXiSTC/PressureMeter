@@ -5,12 +5,14 @@ import (
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/yindaheng98/go-utility/QueueSet"
 	"strconv"
+	"time"
 )
 
 //设置类型
 type Config struct {
-	TaskAccN  uint16 `yaml:"TaskAccN" usage:"以同时进行的任务数量"`
-	TaskQSize uint16 `yaml:"TaskQSize" usage:"任务队列缓冲区大小"`
+	TaskAccN  uint16        `yaml:"TaskAccN" usage:"以同时进行的任务数量"`
+	TaskQSize uint16        `yaml:"TaskQSize" usage:"任务队列缓冲区大小"`
+	RestTime  time.Duration `yaml:"RestTime" usage:"线程在前一个任务任务结束到后一个任务开始之间的休息时间"`
 }
 
 var conf Config //配置信息
@@ -19,6 +21,7 @@ func DefaultConfig() Config {
 	return Config{
 		TaskAccN:  4,
 		TaskQSize: 100,
+		RestTime:  5e9,
 	}
 }
 
@@ -36,6 +39,7 @@ func Init(c Config) {
 		go func(goi uint16) { //后台任务处理goroutine
 			for !toStop { //如果检测到要停止了就停止
 				run1task(goi)
+				time.Sleep(conf.RestTime)
 			}
 			stopped <- goi
 		}(i)

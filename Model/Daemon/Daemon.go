@@ -25,14 +25,12 @@ func Cancel(id string) {
 	defer queueMu.Unlock()
 	if queue.Exists(id) {
 		queue.Cancel(id)
-		return
 	}
 	runningsMu.Lock()
 	defer runningsMu.Unlock()
 	for i, task := range runnings {
 		if task.GetID() == id {
 			task.Stop(uint16(i))
-			return
 		}
 	}
 }

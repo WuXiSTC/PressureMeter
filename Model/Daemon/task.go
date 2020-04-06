@@ -22,13 +22,13 @@ func GetState(id string) TaskState {
 	defer queueMu.RUnlock()
 	runningsMu.RLock()
 	defer runningsMu.RUnlock()
-	if queue.Exists(id) {
-		return QUEUEING
-	}
 	for _, task := range runnings {
 		if task.GetID() == id {
 			return RUNNING
 		}
+	}
+	if queue.Exists(id) {
+		return QUEUEING
 	}
 	return NOTEXISTS
 }

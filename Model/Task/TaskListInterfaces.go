@@ -76,3 +76,7 @@ func (tsk *task) Delete() error {
 	}
 	return nil
 }
+
+func (tsk *task) SetDuration(d time.Duration) {
+	tsk.duration = d
+}

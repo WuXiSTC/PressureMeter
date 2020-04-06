@@ -3,45 +3,94 @@ package TaskList
 import (
 	"errors"
 	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
+	"gitee.com/WuXiSTC/PressureMeter/util"
+	"sync"
 	"time"
 )
 
+var daemonMu = new(sync.RWMutex)
+
 //将一个任务加进任务队列
 //
-//不会返回错误，返回的bool表示任务是否存在
-func (tasklist *taskList) Start(id string, duration time.Duration) error {
-	task, exists := tasklist.tasks[id]
-	if !exists {
+//不会返回错误，返回任务是否存在
+func Start(id string, duration time.Duration) error {
+	tasklistMu.RLock()
+	defer tasklistMu.RUnlock()
+	daemonMu.Lock()
+	defer daemonMu.Unlock()
+	switch getState(id) {
+	case NOTEXISTS:
 		return errors.New("not exists")
-	}
-	task.stateLock.Lock()
-	defer task.stateLock.Unlock()
-	if task.queueing { //如果已经在排队
+	case STOPPED:
+		task := tasklist[id]
+		task.SetDuration(duration)
+		Daemon.Queue(task)
+	default:
 		return errors.New("already started")
 	}
-	Daemon.AddTask(task, duration)
-	task.queueing = true
 	return nil
 }
 
 //将一个任务停止执行
 //
-//返回任务是否存在和错误信息
-func (tasklist *taskList) Stop(id string) error {
-	task, exists := tasklist.tasks[id]
-	if !exists {
+//返回任务是否存在
+func Stop(id string) error {
+	tasklistMu.RLock()
+	defer tasklistMu.RUnlock()
+	daemonMu.Lock()
+	defer daemonMu.Unlock()
+	switch getState(id) {
+	case NOTEXISTS:
 		return errors.New("not exists")
+	case STOPPED:
+		return errors.New("already stopped")
+	default:
+		Daemon.Cancel(id)
+		return nil
 	}
-	task.stateLock.Lock()
-	defer task.stateLock.Unlock()
-	if !task.queueing { //如果都没在排队
-		return nil //直接返回成功
+}
+
+type TaskState int
+
+const (
+	NOTEXISTS TaskState = -1
+	QUEUEING  TaskState = 0
+	RUNNING   TaskState = 1
+	STOPPED   TaskState = 2
+)
+
+func GetState(id string) TaskState {
+	tasklistMu.RLock()
+	defer tasklistMu.RUnlock()
+	daemonMu.RLock()
+	defer daemonMu.RUnlock()
+	return getState(id)
+}
+
+func getState(id string) TaskState {
+	switch Daemon.GetState(id) {
+	case Daemon.RUNNING:
+		return RUNNING
+	case Daemon.QUEUEING:
+		return QUEUEING
+	default:
+		if _, exists := tasklist[id]; !exists {
+			return NOTEXISTS
+		} else {
+			return STOPPED
+		}
 	}
-	if task.IsRunning() { //如果在运行
-		return task.Stop() //那就停止
-	} else if task.queueing { //如果在排队
-		Daemon.CancelTask(id) //那就取消
+}
+
+//停止所有任务
+func StopAll() {
+	tasklistMu.RLock()
+	defer tasklistMu.RUnlock()
+	daemonMu.Lock()
+	defer daemonMu.Unlock()
+	Daemon.Stop()
+	for id := range tasklist {
+		Daemon.Cancel(id)
 	}
-	task.queueing = false
-	return nil
+	util.Log("All tasks stopped")
 }

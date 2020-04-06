@@ -2,101 +2,71 @@ package TaskList
 
 import (
 	"errors"
-	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"sync"
 )
 
-type taskList struct {
-	tasks map[string]*task
-}
-
-var TaskList = taskList{make(map[string]*task)}
+var tasklist map[string]TaskInterface
+var tasklistMu = new(sync.RWMutex)
 
 //插入一个任务
 //
 //应该先删除ID对应的任务再插入
-func (tasklist *taskList) AddTask(t TaskInterface) error {
-	tsk := &task{t, new(sync.Mutex), false}
-	_, exists := tasklist.tasks[tsk.GetID()]
+func AddTask(tsk TaskInterface) error {
+	tasklistMu.Lock()
+	defer tasklistMu.Unlock()
+	_, exists := tasklist[tsk.GetID()]
 	if exists {
 		return errors.New("任务已存在")
 	}
-	tasklist.tasks[tsk.GetID()] = tsk
+	tasklist[tsk.GetID()] = tsk
 	return nil
 }
 
 //按照ID获取任务
 //
 //返回任务信息获取接口和是否存在
-func (tasklist *taskList) GetInfo(id string) TaskInfo {
-	if info, exists := tasklist.tasks[id]; exists {
+func GetInfo(id string) TaskInfo {
+	tasklistMu.RLock()
+	defer tasklistMu.RUnlock()
+	if info, exists := tasklist[id]; exists {
 		return info
 	}
 	return nil
 }
 
-type TaskState int
-
-const (
-	NOTEXISTS TaskState = -1
-	QUEUEING  TaskState = 0
-	RUNNING   TaskState = 1
-	STOPPED   TaskState = 2
-)
-
-func (tasklist *taskList) GetState(id string) TaskState {
-	task, exists := tasklist.tasks[id]
-	if !exists {
-		return NOTEXISTS
-	}
-	if task.queueing && !task.IsRunning() {
-		return QUEUEING
-	}
-	if task.queueing && task.IsRunning() {
-		return RUNNING
-	}
-	return STOPPED
-}
-
 //按照ID删除任务
 //
 //返回任务是否存在和错误信息
-func (tasklist *taskList) DelTask(id string) (exists bool, err error) {
-	var tsk *task
-	if tsk, exists = tasklist.tasks[id]; exists {
-		if err = tsk.Delete(); err == nil {
-			delete(tasklist.tasks, id)
+func DelTask(id string) (err error) {
+	tasklistMu.Lock()
+	defer tasklistMu.Unlock()
+	switch getState(id) {
+	case STOPPED: //存在且已停止，可删
+		if tsk, exists := tasklist[id]; exists {
+			if err = tsk.Delete(); err == nil {
+				delete(tasklist, id)
+			}
 		}
+	case NOTEXISTS: //不存在
+		err = errors.New("not exists")
+	default:
+		err = errors.New("running or queuing")
 	}
 	return
 }
 
-func (tasklist *taskList) Exists(id string) bool {
-	_, exists := tasklist.tasks[id]
-	return exists
-}
-
-//停止所有任务
-func (tasklist *taskList) StopAll() error {
-	Daemon.Stop()
-	for _, tsk := range tasklist.tasks {
-		if err := tsk.Stop(); err != nil {
-			return err
-		}
-	}
-	util.Log("All tasks stopped")
-	return nil
-}
-
 //删除所有任务
-func (tasklist *taskList) DelAll() error {
-	for _, tsk := range tasklist.tasks {
-		if err := tsk.Delete(); err != nil {
+func DelAll() error {
+	tasklistMu.Lock()
+	defer tasklistMu.Unlock()
+	StopAll()
+	for id := range tasklist {
+		if err := DelTask(id); err != nil {
 			return err
 		}
 	}
 	util.Log("All tasks deleted")
-	tasklist.tasks = nil
+	tasklist = nil
 	return nil
 }

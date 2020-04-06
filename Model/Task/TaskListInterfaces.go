@@ -7,20 +7,19 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"os/exec"
 	"strconv"
 	"sync"
+	"time"
 )
 
 type task struct {
-	id             string    //任务的ID
-	configFilePath string    //设置文件的路径
-	resultFilePath string    //结果文件的路径
-	logFilePath    string    //日志文件的路径
-	command        *exec.Cmd //要执行的指令
-	stateLock      *sync.Mutex
-	shutdownPort   uint16
+	id             string //任务的ID
+	configFilePath string //设置文件的路径
+	resultFilePath string //结果文件的路径
+	logFilePath    string //日志文件的路径
+	stateLock      *sync.RWMutex
 	ctx            context.Context
+	duration       time.Duration
 }
 
 //新建Task，相当于Task的构造函数
@@ -54,7 +53,7 @@ func New(id string, configFile multipart.File) (*task, error) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	tsk := &task{id, configFilePath, resultFilePath, logFilePath,
-		nil, new(sync.Mutex), 0, ctx}
+		new(sync.RWMutex), ctx, 0}
 	cancel()
 	return tsk, nil
 }
@@ -63,7 +62,7 @@ func New(id string, configFile multipart.File) (*task, error) {
 //
 //先停止任务，然后删除任务相关文件
 func (tsk *task) Delete() error {
-	if tsk.IsRunning() {
+	if tsk.isRunning() {
 		return errors.New("任务未停止，无法删除")
 	}
 	if err := util.DeleteFile(tsk.configFilePath); err != nil { //删除之前的配置文件

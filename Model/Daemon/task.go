@@ -5,7 +5,7 @@ type TaskInterface interface {
 	GetID() string       //获取任务ID
 	Start(thread uint16) //指定任务运行线程编号，启动
 	Wait()               //等待
-	Stop()               //停止
+	Stop(thread uint16)  //停止
 }
 
 type TaskState int

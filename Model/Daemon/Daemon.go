@@ -29,9 +29,9 @@ func Cancel(id string) {
 	}
 	runningsMu.Lock()
 	defer runningsMu.Unlock()
-	for _, task := range runnings {
+	for i, task := range runnings {
 		if task.GetID() == id {
-			task.Stop()
+			task.Stop(i)
 			return
 		}
 	}

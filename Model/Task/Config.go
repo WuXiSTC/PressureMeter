@@ -2,6 +2,7 @@ package Task
 
 import (
 	"fmt"
+	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"net"
 	"os"
@@ -11,23 +12,29 @@ import (
 )
 
 type Config struct {
-	JmxDir string `yaml:"JmxDir" usage:"存放jmx文件的目录位置"`
-	JtlDir string `yaml:"JtlDir" usage:"存放jtl结果文件的目录位置"`
-	LogDir string `yaml:"logDir" usage:"存放日志文件的目录位置"`
+	JmxDir           string `yaml:"JmxDir" usage:"存放jmx文件的目录位置"`
+	JtlDir           string `yaml:"JtlDir" usage:"存放jtl结果文件的目录位置"`
+	LogDir           string `yaml:"logDir" usage:"存放日志文件的目录位置"`
+	ShutdownBasePort uint16 `yaml:"BasePort" usage:"Jmeter用于接收shutdown message的端口号最大值"`
+
+	taskAccN uint16
 }
 
 var conf Config
 
 func DefaultConfig() Config {
 	return Config{
-		JmxDir: "Data/jmx",
-		JtlDir: "Data/jtl",
-		LogDir: "Data/log",
+		JmxDir:           "Data/jmx",
+		JtlDir:           "Data/jtl",
+		LogDir:           "Data/log",
+		ShutdownBasePort: 4445,
+		taskAccN:         4,
 	}
 }
 
-func Init(c Config) {
+func Init(c Config, cd Daemon.Config) {
 	conf = c
+	conf.taskAccN = cd.TaskAccN
 }
 
 //通过id获取jmx文件路径
@@ -46,6 +53,18 @@ func (conf *Config) jtlPath(id string) string {
 func (conf *Config) logPath(id string) string {
 	util.LogE(os.MkdirAll(conf.LogDir, os.ModePerm)) //没有目录先建目录
 	return filepath.Join(conf.LogDir, id) + ".log"   //文件名是任务的id
+}
+
+func (conf *Config) startCommand(id string, i uint16) *exec.Cmd {
+	return conf.getStartCommand(id, conf.getShutdownPort(i), getIPList(i))
+}
+
+func (conf *Config) stopCommand(i uint16) *exec.Cmd {
+	return conf.getStopCommand(conf.getShutdownPort(i))
+}
+
+func (conf *Config) getShutdownPort(i uint16) uint16 {
+	return conf.ShutdownBasePort + i
 }
 
 //通过id获取要执行的指令

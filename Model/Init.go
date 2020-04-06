@@ -30,7 +30,7 @@ func DefaultConfig() Config {
 //Model层组件初始化
 func Init(c Config) {
 	Daemon.Init(c.DaemonConfig)
-	task.Init(c.TaskConfig)
+	task.Init(c.TaskConfig, c.DaemonConfig)
 }
 
 //新建并添加一个新Task

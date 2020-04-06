@@ -1,4 +1,4 @@
-package Daemon
+package Task
 
 import (
 	"errors"
@@ -15,16 +15,20 @@ func getIPList(i uint16) (list []net.TCPAddr) {
 	ipListMu.RLock()
 	defer ipListMu.RUnlock()
 	defer func() { recover() }()
-	list = ipList[i]
-	return
+	if len(ipList) <= int(i) {
+		return nil
+	}
+	return ipList[i]
 }
 
 //修改Jmeter服务IP列表
+//
+//list[1]给线程1用、list[2]给线程2用，依此类推
 func SetIPList(list [][]net.TCPAddr) error {
 	ipListMu.Lock()
 	defer ipListMu.Unlock()
-	if len(list) < int(conf.TaskAccN) {
-		return errors.New(fmt.Sprintf("请至少指定%d组IP", conf.TaskAccN))
+	if len(list) < int(conf.taskAccN) {
+		return errors.New(fmt.Sprintf("请至少指定%d组IP", conf.taskAccN))
 	}
 	ipList = list
 	return nil

@@ -16,4 +16,5 @@ type TaskInterface interface {
 	TaskInfo
 	Delete() error
 	SetDuration(d time.Duration)
+	GetDuration() time.Duration
 }

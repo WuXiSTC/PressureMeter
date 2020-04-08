@@ -27,6 +27,7 @@ func (tl *taskList) AddTask(tsk TaskInterface) error {
 		return errors.New("任务已存在")
 	}
 	tl.list[tsk.GetID()] = tsk
+	tl.writeTaskStateList()
 	return nil
 }
 
@@ -53,6 +54,7 @@ func (tl *taskList) DelTask(id string) (err error) {
 		if tsk, exists := tl.list[id]; exists {
 			if err = tsk.Delete(); err == nil {
 				delete(tl.list, id)
+				tl.writeTaskStateList()
 			}
 		}
 	case NOTEXISTS: //不存在
@@ -76,4 +78,14 @@ func (tl *taskList) DelAll() error {
 	util.Log("All tasks deleted")
 	tl.list = nil
 	return nil
+}
+
+func (tl *taskList) writeTaskStateList() {
+	taskStateList.AllTasks = make([]string, len(tl.list))
+	i := 0
+	for ID := range tl.list {
+		taskStateList.AllTasks[i] = ID
+		i++
+	}
+	UpdateStateCallback(taskStateList)
 }

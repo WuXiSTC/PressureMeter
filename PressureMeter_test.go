@@ -3,11 +3,10 @@ package PressureMeter
 import (
 	"context"
 	"fmt"
-	"gitee.com/WuXiSTC/PressureMeter/Model/Daemon"
+	"gitee.com/WuXiSTC/PressureMeter/Model/TaskList"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/kataras/iris"
 	"testing"
-	"time"
 )
 
 func TestPressureMeter(t *testing.T) {
@@ -18,10 +17,9 @@ func TestPressureMeter(t *testing.T) {
 		Logger: func(s string) { fmt.Printf("PressureMeter-->%s\n", s) },
 		Error:  func(err error) { fmt.Printf("PressureMeter-->%s\n", err) },
 	}
-	conf.ModelConfig.DaemonConfig.UpdateStateCallback =
-		func(runnings []Daemon.TaskInterface, startTimes []time.Time, queuings []Daemon.TaskInterface) {
-			fmt.Println(runnings, startTimes, queuings)
-		}
+	conf.ModelConfig.UpdateStateCallback = func(list TaskList.TaskStateList) {
+		fmt.Println(list)
+	}
 	app := Init(appCtx, conf)
 	err := app.Run(iris.Addr(":80"))
 	util.LogE(err)

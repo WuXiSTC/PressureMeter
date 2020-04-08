@@ -80,3 +80,7 @@ func (tsk *task) Delete() error {
 func (tsk *task) SetDuration(d time.Duration) {
 	tsk.duration = d
 }
+
+func (tsk task) GetDuration() time.Duration {
+	return tsk.duration
+}

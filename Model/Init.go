@@ -10,11 +10,6 @@ import (
 
 var TaskList = tasklist.TaskList
 
-var StateList = map[tasklist.TaskState]string{
-	tasklist.STOPPED:  "Stopped",
-	tasklist.QUEUEING: "Queueing",
-	tasklist.RUNNING:  "Running"}
-
 type Config struct {
 	DaemonConfig Daemon.Config `yaml:"DaemonConfig" usage:"Configuration of PressureMater Daemon."`
 	TaskConfig   task.Config   `yaml:"TaskConfig" usage:"Configuration of PressureMater Task."`

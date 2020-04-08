@@ -64,6 +64,10 @@ func GetState(ctx iris.Context) {
 	case TaskList.NOTEXISTS:
 		ctx.StatusCode(iris.StatusNotFound)
 	default:
-		responseMsg(ctx, iris.Map{"message": Model.StateList[state], "stateCode": state})
+		var states = map[TaskList.TaskState]string{
+			TaskList.STOPPED:  "Stopped",
+			TaskList.QUEUEING: "Queueing",
+			TaskList.RUNNING:  "Running"}
+		responseMsg(ctx, iris.Map{"message": states[state], "stateCode": state})
 	}
 }

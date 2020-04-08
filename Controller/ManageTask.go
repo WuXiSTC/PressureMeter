@@ -1,7 +1,6 @@
 package Controller
 
 import (
-	"fmt"
 	"gitee.com/WuXiSTC/PressureMeter/Model"
 	"gitee.com/WuXiSTC/PressureMeter/util"
 	"github.com/kataras/iris"
@@ -47,9 +46,4 @@ func DeleteTask(ctx iris.Context) {
 	} else {
 		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 	}
-}
-
-func ExpectDuration(ctx iris.Context) { //TODO
-	_, err := ctx.WriteString(fmt.Sprintf("%d", 0))
-	util.LogE(err)
 }

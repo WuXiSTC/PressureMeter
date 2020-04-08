@@ -20,29 +20,27 @@ func DefaultConfig() Config {
 	return Config{
 		ModelConfig: Model.DefaultConfig(),
 		URLConfig: URLConfig{
-			NewTask:        []string{"Task", "new"},
-			DeleteTask:     []string{"Task", "delete"},
-			GetConfig:      []string{"Task", "getConfig"},
-			GetResult:      []string{"Task", "getResult"},
-			GetLog:         []string{"Task", "getLog"},
-			StartTask:      []string{"Task", "start"},
-			StopTask:       []string{"Task", "stop"},
-			GetState:       []string{"Task", "getState"},
-			ExpectDuration: []string{"Task", "ExpectDuration"},
+			NewTask:    []string{"Task", "new"},
+			DeleteTask: []string{"Task", "delete"},
+			GetConfig:  []string{"Task", "getConfig"},
+			GetResult:  []string{"Task", "getResult"},
+			GetLog:     []string{"Task", "getLog"},
+			StartTask:  []string{"Task", "start"},
+			StopTask:   []string{"Task", "stop"},
+			GetState:   []string{"Task", "getState"},
 		},
 	}
 }
 
 type URLConfig struct {
-	NewTask        []string
-	DeleteTask     []string
-	GetConfig      []string
-	GetResult      []string
-	GetLog         []string
-	StartTask      []string
-	StopTask       []string
-	GetState       []string
-	ExpectDuration []string
+	NewTask    []string
+	DeleteTask []string
+	GetConfig  []string
+	GetResult  []string
+	GetLog     []string
+	StartTask  []string
+	StopTask   []string
+	GetState   []string
 }
 
 func getURL(ss []string) string {
@@ -66,7 +64,6 @@ func Init(ctx context.Context, conf Config) (app *iris.Application) {
 	app.Get(getURL(conf.URLConfig.StartTask), Controller.StartTask)
 	app.Get(getURL(conf.URLConfig.StopTask), Controller.StopTask)
 	app.Get(getURL(conf.URLConfig.GetState), Controller.GetState)
-	app.Get(strings.Join(conf.URLConfig.ExpectDuration, "/"), Controller.ExpectDuration)
 
 	go func() {
 		<-ctx.Done()

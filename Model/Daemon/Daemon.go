@@ -17,7 +17,7 @@ func Queue(t TaskInterface) {
 	runningsMu.RLock()
 	defer runningsMu.RUnlock()
 	queue.Push(t)
-	conf.UpdateStateCallback(getInfo())
+	UpdateStateCallback(getInfo())
 }
 
 //取消一个任务的运行
@@ -30,7 +30,7 @@ func Cancel(id string) {
 			task.Stop(uint16(i))
 		}
 	}
-	conf.UpdateStateCallback(getInfo())
+	UpdateStateCallback(getInfo())
 }
 
 var runnings []TaskInterface
@@ -47,7 +47,7 @@ func run1task(i uint16) {
 	runningsMu.Lock()
 	runnings[i] = task
 	startTimes[i] = time.Now()
-	conf.UpdateStateCallback(getInfo())
+	UpdateStateCallback(getInfo())
 	util.Log(fmt.Sprintf("Daemon %d: get task %s", i, task.GetID()))
 	task.Start(i) //启动
 	util.Log(fmt.Sprintf("Daemon %d: started task %s", i, task.GetID()))
@@ -58,7 +58,7 @@ func run1task(i uint16) {
 	runningsMu.Lock()
 	util.Log(fmt.Sprintf("Daemon %d: stopped task %s", i, task.GetID()))
 	runnings[i] = nil
-	conf.UpdateStateCallback(getInfo())
+	UpdateStateCallback(getInfo())
 	runningsMu.Unlock()
 }
 

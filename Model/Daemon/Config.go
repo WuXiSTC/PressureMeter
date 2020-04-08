@@ -12,9 +12,6 @@ import (
 type Config struct {
 	TaskAccN uint16        `yaml:"TaskAccN" usage:"以同时进行的任务数量"`
 	RestTime time.Duration `yaml:"RestTime" usage:"线程在前一个任务任务结束到后一个任务开始之间的休息时间"`
-
-	//当有任务的状态发生变化时会调用此函数
-	UpdateStateCallback func(runnings []TaskInterface, startTimes []time.Time, queuings []TaskInterface) `yaml:"-"`
 }
 
 var conf Config //配置信息
@@ -28,6 +25,9 @@ func DefaultConfig() Config {
 
 var toStop = false
 var stopped = make(chan uint16)
+
+//当有任务的状态发生变化时会调用此函数
+var UpdateStateCallback = func(runnings []TaskInterface, startTimes []time.Time, queuings []TaskInterface) {}
 
 //按照配置文件创建任务队列和执行任务的后台goroutine
 func Init(c Config) {

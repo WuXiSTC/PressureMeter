@@ -10,18 +10,19 @@ import (
 
 //设置类型
 type Config struct {
-	TaskAccN  uint16        `yaml:"TaskAccN" usage:"以同时进行的任务数量"`
-	TaskQSize uint16        `yaml:"TaskQSize" usage:"任务队列缓冲区大小"`
-	RestTime  time.Duration `yaml:"RestTime" usage:"线程在前一个任务任务结束到后一个任务开始之间的休息时间"`
+	TaskAccN uint16        `yaml:"TaskAccN" usage:"以同时进行的任务数量"`
+	RestTime time.Duration `yaml:"RestTime" usage:"线程在前一个任务任务结束到后一个任务开始之间的休息时间"`
+
+	//当有任务的状态发生变化时会调用此函数
+	UpdateStateCallback func(runnings []TaskInterface, startTimes []time.Time, queuings []TaskInterface) `yaml:"-"`
 }
 
 var conf Config //配置信息
 
 func DefaultConfig() Config {
 	return Config{
-		TaskAccN:  4,
-		TaskQSize: 100,
-		RestTime:  5e9,
+		TaskAccN: 4,
+		RestTime: 5e9,
 	}
 }
 
@@ -32,9 +33,9 @@ var stopped = make(chan uint16)
 func Init(c Config) {
 	conf = c
 	util.Log(fmt.Sprintf("%d tasks can running simultaneously at most", conf.TaskAccN))
-	util.Log(fmt.Sprintf("Task buffer size: %d", conf.TaskQSize))
-	queue = QueueSet.New(uint64(conf.TaskQSize))
+	queue = QueueSet.New()
 	runnings = make([]TaskInterface, conf.TaskAccN)
+	startTimes = make([]time.Time, conf.TaskAccN)
 	for i := uint16(0); i < conf.TaskAccN; i++ {
 		go func(goi uint16) { //后台任务处理goroutine
 			for !toStop { //如果检测到要停止了就停止

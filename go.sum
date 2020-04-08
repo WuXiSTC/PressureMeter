@@ -218,6 +218,10 @@ github.com/yindaheng98/go-utility v0.0.0-20200406054152-65b3e0322aab h1:XtUI5dP2
 github.com/yindaheng98/go-utility v0.0.0-20200406054152-65b3e0322aab/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
 github.com/yindaheng98/go-utility v0.0.0-20200406063654-ccf0e5835599 h1:kmasPIn30vMrKl6eIwLcQlFzvG7B4TezLqCe/jJGgRY=
 github.com/yindaheng98/go-utility v0.0.0-20200406063654-ccf0e5835599/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
+github.com/yindaheng98/go-utility v0.0.0-20200408134343-c6e3d29ed555 h1:OlYozkFYBJqmGd56jjsO+J7I0rmPB5j/kF7EF1IOuSA=
+github.com/yindaheng98/go-utility v0.0.0-20200408134343-c6e3d29ed555/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
+github.com/yindaheng98/go-utility v0.0.0-20200408142952-b2c861e9fb9e h1:SI8w6oj9oqsm6Ts+FxEltbqn4i/8Lxg+7t65ri60V7I=
+github.com/yindaheng98/go-utility v0.0.0-20200408142952-b2c861e9fb9e/go.mod h1:jAdOhT7aQmcfOW901gOCnOLvS4qKrO5Dz/McsDrsyl8=
 github.com/yindaheng98/gogisnet v0.0.0-20200317093735-716fe987adef h1:CkP84DKB0MviNtE7Yls5xweyNRKdxyS+Vl7xORBJnnM=
 github.com/yindaheng98/gogisnet v0.0.0-20200317093735-716fe987adef/go.mod h1:va/HUQuzlhL/4HV27prKILA7tOI75wJgezxlU6+8Z9s=
 github.com/yindaheng98/gogistry v0.0.0-20200314154143-3f318b478377 h1:q6Nvsny5sXTF9ph/7vbhujkqSWPG1jrux8iZyXuvq+c=

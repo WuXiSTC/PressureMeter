@@ -28,6 +28,7 @@ func DefaultConfig() Config {
 			StartTask:  []string{"Task", "start"},
 			StopTask:   []string{"Task", "stop"},
 			GetState:   []string{"Task", "getState"},
+			GetTasks:   []string{"Task", "getTasks"},
 		},
 	}
 }
@@ -41,6 +42,7 @@ type URLConfig struct {
 	StartTask  []string
 	StopTask   []string
 	GetState   []string
+	GetTasks   []string
 }
 
 func getURL(ss []string) string {
@@ -64,6 +66,7 @@ func Init(ctx context.Context, conf Config) (app *iris.Application) {
 	app.Get(getURL(conf.URLConfig.StartTask), Controller.StartTask)
 	app.Get(getURL(conf.URLConfig.StopTask), Controller.StopTask)
 	app.Get(getURL(conf.URLConfig.GetState), Controller.GetState)
+	app.Get(strings.Join(conf.URLConfig.GetTasks, "/"), Controller.GetTasks)
 
 	go func() {
 		<-ctx.Done()

@@ -47,3 +47,8 @@ func DeleteTask(ctx iris.Context) {
 		responseMsg(ctx, iris.Map{"ok": false, "message": err.Error()})
 	}
 }
+
+func GetTasks(ctx iris.Context) {
+	_, err := ctx.JSON(Model.Tasks)
+	util.LogE(err)
+}

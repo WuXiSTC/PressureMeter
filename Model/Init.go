@@ -9,20 +9,17 @@ import (
 )
 
 var TaskList = tasklist.TaskList
+var Tasks tasklist.TaskStateList
 
 type Config struct {
 	DaemonConfig Daemon.Config `yaml:"DaemonConfig" usage:"Configuration of PressureMater Daemon."`
 	TaskConfig   task.Config   `yaml:"TaskConfig" usage:"Configuration of PressureMater Task."`
-
-	//当有某个任务的状态发生变化时此函数将被调用
-	UpdateStateCallback func(list tasklist.TaskStateList) `yaml:"-"`
 }
 
 func DefaultConfig() Config {
 	return Config{
-		DaemonConfig:        Daemon.DefaultConfig(),
-		TaskConfig:          task.DefaultConfig(),
-		UpdateStateCallback: func(tasklist.TaskStateList) {},
+		DaemonConfig: Daemon.DefaultConfig(),
+		TaskConfig:   task.DefaultConfig(),
 	}
 }
 
@@ -30,7 +27,9 @@ func DefaultConfig() Config {
 func Init(c Config) {
 	Daemon.Init(c.DaemonConfig)
 	task.Init(c.TaskConfig, c.DaemonConfig)
-	tasklist.UpdateStateCallback = c.UpdateStateCallback
+	tasklist.UpdateStateCallback = func(list tasklist.TaskStateList) {
+		Tasks = list
+	}
 	tasklist.Init()
 }
 

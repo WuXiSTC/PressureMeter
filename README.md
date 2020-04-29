@@ -29,7 +29,7 @@
 
 * 项目的最外层是一个初始化函数`Init(...)`和用于传递设置的两个struct `Config`和`URLConfig`：
   * `Init(...)`用于解析命令行参数和设置、启动后台Deamon，并返回一个`*iris.Application`
-  * `Config`封装一个`URLConfig`和一个`*util.LoggerOption`用于向`Init(...)`传递设置信息
+  * `Config`封装一个`URLConfig`和一个`*util.LoggerConfig`用于向`Init(...)`传递设置信息
   * `URLConfig`封装了一系列字符串数组，用于指定`Controller`中各个`Web API`在`*iris.Application`中的接口链接
 * `Controller`：存放`Web API`处理函数，所有的Web请求皆直接传递到此文件夹的函数中，是对`Model`层的`Web API`封装；
 * `Model`：存放基本的业务处理程序和主要业务逻辑，由`Controller`层调用并封装。
@@ -119,12 +119,6 @@ Get接口，在`{id:path}`上写上任务ID，即可获取任务信息。
 
 * 成功获取则返回对应文件：`/Task/getConfig/{id:path}`返回配置文件、`/Task/getResult/{id:path}`返回结果文件、`/Task/getLog/{id:path}`返回日志文件
 * 任务不存在则返回状态码404
-
-#### /Task/ExpectDuration
-
-Get接口，无输入值
-
-返回值为一个数字，表示当前系统内所有任务完成的所需的预期时间。
 
 ### 运行
 

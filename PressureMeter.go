@@ -28,7 +28,7 @@ func DefaultConfig() Config {
 			StartTask:  []string{"Task", "start"},
 			StopTask:   []string{"Task", "stop"},
 			GetState:   []string{"Task", "getState"},
-			GetTasks:   []string{"Task", "getTasks"},
+			GetTasks:   []string{"getTasks"},
 		},
 	}
 }
